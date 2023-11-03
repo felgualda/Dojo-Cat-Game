@@ -18,7 +18,15 @@ janela.set_background_color((22,22,22))
 key_input = keyboard.Keyboard()
 
 # SPRITES E ANIMAÇÕES
-jogador = Sprite('assets/gato.png',2)
+jogador = Sprite('assets/gato_animacao-Sheet.png',18)
+
+jogador.set_loop(True)
+
+jogador.set_sequence_time(1,9,30, True)
+jogador.set_sequence_time(11,18,30, True)
+
+jogador.set_total_duration(560)
+jogador.play()
 
 todos_sprites = mapgenerator.todasSalas
 
@@ -98,10 +106,10 @@ while True:
 
     # SPRITE DO JOGADOR
     if(velocity_x > 0):                                                  # Se estiver se movendo pra direita, estado da animação 0 (Direita)
-        jogador.set_curr_frame(0)
+        jogador.set_sequence(1,9,True)
 
     elif(velocity_x < 0):                                                # Se estiver se movendo pra esquerda, estado da animação 0 (Esquerda)
-        jogador.set_curr_frame(1)
+        jogador.set_sequence(11,18, True)
 
     # MOVIMENTO ENTRE SALAS
 
@@ -178,7 +186,7 @@ while True:
 
     #if(bola.rect.y >= h-bola.height or bola.rect.y <= 0):
         #velocity_y *= -1
-    janela.set_background_color(000)
+    janela.set_background_color((22,22,22))
     
     for s in todos_sprites:
         s.DrawSala()
@@ -196,4 +204,5 @@ while True:
     if(len(ultimasCoords) > 2):
         ultimasCoords.pop(0)
     
+    jogador.update()
     janela.update()
