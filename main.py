@@ -12,34 +12,21 @@ import mapgenerator
 # DEFINIÇÃO DA JANELA
 w,h = 1200,675
 janela = Window(w,h)
-janela.set_background_color((0,0,0))
+janela.set_background_color((22,22,22))
 
 # DISPOSITIVOS DE ENTRADA
 key_input = keyboard.Keyboard()
 
 # SPRITES E ANIMAÇÕES
 jogador = Sprite('assets/gato.png',2)
-#bg = Sprite('assets/Sala Passagem.png')
-#bg2 = Sprite('assets/Sala Passagem.png')
-#bg3 = Sprite('assets/Sala Passagem.png')
-#bg4 = Sprite('assets/Sala Passagem.png')
-#bg5 = Sprite('assets/Sala Passagem.png')
-#bg6 = Sprite('assets/Sala Passagem.png')
-#bg7 = Sprite('assets/Sala Passagem.png')
-#bg8 = Sprite('assets/Sala Passagem.png')
-#bg9 = Sprite('assets/Sala Passagem.png')
 
-bg = Sala((0,0),0,True)
-bg2 = Sala((-1200,0),0,True)
-bg3 = Sala((0,-675),0,True)
-bg4 = Sala((-1200,-675),0,True)
-todos_sprites = [bg,bg2,bg3,bg4]
+todos_sprites = mapgenerator.todasSalas
 
 # POSIÇÕES INICIAIS
-jogador.set_position(w/2-20,h/2-20)
+jogador.set_position(w/2-40.5,h/2-40.5)
 
 # CONFIGURAÇÕES E VARIÁVEIS DO JOGO
-velMovimento = 250
+velMovimento = 270
 
 podeMover = True
 velocity_x = 0                                                         # Velocidade atual do jogador no eixo X
@@ -47,6 +34,10 @@ velocity_y = 0                                                         # Velocid
 
 contadorQuadros = 0
 ultimasCoords = []
+
+# GERAÇÃO DE MAPA
+mapa = mapgenerator.GenerateMap(14,8)
+
 
 #screen_swap
 vel_cam_x = 1550
@@ -64,7 +55,8 @@ x_tela = 0
 # FUNÇÕES
 
 v_str = ''
-mapgenerator.GenerateMap(14,8)
+print(mapa)
+mapgenerator.SetSalas(mapa)
 while True:
     x = jogador.x
     y = jogador.y
@@ -116,7 +108,7 @@ while True:
     if(jogador.x < 0):                                                   # Jogador passou para sala a ESQUERDA
         swapLeft = True
     if(swapLeft):
-        ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
+        #ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
 
         tempo_resto = w/vel_cam_x
         vel_jogador = (w-jogador.width-20)/tempo_resto
@@ -133,7 +125,7 @@ while True:
     if(jogador.x > w-jogador.width):                                      # Jogador passou para sala a DIREITA
         swapRight = True
     if(swapRight):
-        ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
+        #ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
 
         tempo_resto = w/vel_cam_x
         vel_jogador = (w-jogador.width-20)/tempo_resto
@@ -150,7 +142,7 @@ while True:
     if(jogador.y < 0):                                                    # Jogador passou para sala a CIMA
         swapUp = True
     if(swapUp):
-        ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
+        #ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
 
         tempo_resto = h/vel_cam_y
         vel_jogador = (h-jogador.height-10)/tempo_resto
@@ -167,7 +159,7 @@ while True:
     if(jogador.y > h-jogador.height):                                      # Jogador passou para sala a BAIXO
         swapDown = True
     if(swapDown):
-        ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
+        #ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
 
         tempo_resto = h/vel_cam_y
         vel_jogador = (h-jogador.height-10)/tempo_resto
@@ -192,6 +184,7 @@ while True:
         s.DrawSala()
 
     jogador.draw()
+
     for s in todos_sprites:
         s.DrawFrenteJogador()
     if(not swapLeft and not swapRight and not swapDown and not swapUp and podeMover):
@@ -199,8 +192,8 @@ while True:
         jogador.move_y(velocity_y*janela.delta_time())
     
     # REGISTRAR COORDENADAS DOS ÚLTIMOS QUADROS PARA COLISÃO
-        ultimasCoords.append((jogador.x,jogador.y))
-        if(len(ultimasCoords) > 3):
-            ultimasCoords.pop(0)
+    ultimasCoords.append((jogador.x,jogador.y))
+    if(len(ultimasCoords) > 2):
+        ultimasCoords.pop(0)
     
     janela.update()

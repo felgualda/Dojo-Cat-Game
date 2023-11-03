@@ -1,4 +1,9 @@
 import random
+from sala import *
+
+todasSalas = []
+lista_coords = []
+spawn = []
 
 def Show(a):
     for l in a:
@@ -11,12 +16,14 @@ def GenerateMap(n_rooms, matrix_size):
         
         #set spawn
         spawn_coords = [random.randint(1,matrix_size-2),random.randint(1,matrix_size-2)]
+        spawn.append(spawn_coords[0])
+        spawn.append(spawn_coords[1])
         print(spawn_coords)
 
         arr[spawn_coords[0]][spawn_coords[1]] = 2
         generatedRooms = 1;
         rooms = [(spawn_coords[0],spawn_coords[1])]
-        Show(arr)
+        
         cr_i = spawn_coords[0] #stands for current room line
         cr_j = spawn_coords[1] #stands for current room row
         while(generatedRooms < n_rooms):
@@ -35,3 +42,21 @@ def GenerateMap(n_rooms, matrix_size):
             cr_j = rooms[roomPick][1]
             
         Show(arr)
+        return arr
+        
+    
+            
+def SetSalas(a):
+     #definir spawn
+     salaSpawn = Sala((0,0), 0, True)
+     todasSalas.append(salaSpawn)
+
+     for i in range(len(a)):
+          for j in range(len(a)):
+               if a[i][j] == 1:
+                    todasSalas.append(Sala((j-spawn[1],i-spawn[0]),1,False))
+    
+     for i in todasSalas:
+          lista_coords.append(i.adress)
+     for i in todasSalas:
+          i.SetPortas(lista_coords)
