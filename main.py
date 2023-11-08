@@ -19,14 +19,10 @@ key_input = keyboard.Keyboard()
 
 # SPRITES E ANIMAÇÕES
 jogador = Sprite('assets/gato_animacao-Sheet.png',18)
-
-jogador.set_loop(True)
-
-jogador.set_sequence_time(1,9,30, True)
-jogador.set_sequence_time(11,18,30, True)
-
-jogador.set_total_duration(560)
-jogador.play()
+jogador.set_sequence_time(0,18,50,True)
+jogador.set_sequence(0,0,True)
+ultimaDir = 'right'
+transitioning = False
 
 todos_sprites = mapgenerator.todasSalas
 
@@ -82,12 +78,18 @@ while True:
     
     if(key_input.key_pressed('a')):                                      # Tecla A Pressionada
         velocity_x = -velMovimento
+        ultimaDir = 'left'
+        transitioning = False
     elif(velocity_x < 0):
+        transitioning = True
         velocity_x+=dc_speed*janela.delta_time()
 
     if(key_input.key_pressed('d')):                                     # Tecla D Pressionada
         velocity_x = velMovimento
+        ultimaDir = 'right'
+        transitioning = False
     elif(velocity_x > 0):
+        transitioning = True
         velocity_x-=dc_speed*janela.delta_time()
 
     if(velocity_x < 10 and velocity_x > -10):                           # Desacelerar jogador (Zerar a velocidade com valores próximos de 0)
@@ -105,11 +107,28 @@ while True:
                 jogador.set_position(ultimasCoords[0][0],ultimasCoords[0][1])
 
     # SPRITE DO JOGADOR
-    if(velocity_x > 0):                                                  # Se estiver se movendo pra direita, estado da animação 0 (Direita)
-        jogador.set_sequence(1,9,True)
+    if(velocity_x == velMovimento):                                                  # Se estiver se movendo pra direita, estado da animação 0 (Direita)
+        if jogador.get_curr_frame() < 2 or jogador.get_curr_frame() > 9:
+            jogador.set_sequence(2, 9, True)
 
-    elif(velocity_x < 0):                                                # Se estiver se movendo pra esquerda, estado da animação 0 (Esquerda)
-        jogador.set_sequence(11,18, True)
+    if(velocity_x == -velMovimento):                                                # Se estiver se movendo pra esquerda, estado da animação 0 (Esquerda)
+        if jogador.get_curr_frame() < 11 or jogador.get_curr_frame() > 18:
+            jogador.set_sequence(11, 18, True)
+    
+    if(transitioning):
+        if(ultimaDir=='left'):
+            jogador.set_curr_frame(10)
+        if(ultimaDir=='right'):
+            jogador.set_curr_frame(1)
+
+    if(velocity_x == 0):
+        transitioning = False
+
+        if(ultimaDir=='left'):
+            jogador.set_sequence(9,9,True)
+        if(ultimaDir=='right'):
+            jogador.set_sequence(0,0,True)
+
 
     # MOVIMENTO ENTRE SALAS
 

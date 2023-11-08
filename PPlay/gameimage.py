@@ -61,3 +61,7 @@ class GameImage(gameobject.GameObject):
         from . import collision
 
         return collision.Collision.collided_perfect(self, target)
+    
+    def flip(self,tf):
+        self.image = pygame.transform.flip(self.image,tf,False)
+
