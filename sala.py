@@ -16,10 +16,10 @@ class Sala:
         self.sprite.set_position(self.x,self.y)
         self.portas = [Sprite('assets/sala/passages/TOP_PASSAGE.png'),Sprite('assets/sala/passages/BOTTOM_PASSAGE.png'),Sprite('assets/sala/passages/RIGHT_PASSAGE.png'),Sprite('assets/sala/passages/LEFT_PASSAGE.png')]
         # PORTAS
-        self.portas[0].set_position(546+self.x,0+self.y)
-        self.portas[1].set_position(543+self.x,573+self.y)
-        self.portas[2].set_position(1038+self.x,273+self.y)
-        self.portas[3].set_position(self.x,273+self.y)
+        self.portas[0].set_position(528+self.x,0+self.y)
+        self.portas[1].set_position(528+self.x,573+self.y)
+        self.portas[2].set_position(1038+self.x,258+self.y)
+        self.portas[3].set_position(self.x,258+self.y)
 
         self.portaDireita = False
         self.portaEsquerda = False
@@ -43,20 +43,20 @@ class Sala:
         self.renderFrente = [Sprite('assets/sala/left_passage_southwall.png'), Sprite('assets/sala/right_passage_southwall.png'), Sprite('assets/sala/room_southwall.png'),Sprite('assets/sala/botoom_wal_Nodoorl.png'),Sprite('assets/sala/top_frame.png')]
         
         # POSIÇÕES
-        self.renderFrente[0].set_position(0+self.x,390+self.y)
-        self.renderFrente[1].set_position(1062+self.x,390+self.y)
+        self.renderFrente[0].set_position(0+self.x,405+self.y)
+        self.renderFrente[1].set_position(1062+self.x,405+self.y)
         self.renderFrente[2].set_position(138+self.x,594+self.y)
         self.renderFrente[3].set_position(138+self.x,594+self.y)
-        self.renderFrente[4].set_position(555+self.x,36+self.y)
+        self.renderFrente[4].set_position(537+self.x,36+self.y)
 
         self.col[0].set_position(self.x,self.y)
         self.col[1].set_position(1065+self.x,self.y)
         self.col[2].set_position(138+self.x,self.y)
-        self.col[3].set_position(645+self.x,self.y)
-        self.col[4].set_position(self.x,429+self.y)
-        self.col[5].set_position(1062+self.x,429+self.y)
+        self.col[3].set_position(663+self.x,self.y)
+        self.col[4].set_position(self.x,444+self.y)
+        self.col[5].set_position(1062+self.x,444+self.y)
         self.col[6].set_position(138+self.x,633+self.y)
-        self.col[7].set_position(645+self.x,633+self.y)
+        self.col[7].set_position(663+self.x,633+self.y)
 
     def SetPortas(self, l):
         if ((self.adress[0],self.adress[1]+1) in l):

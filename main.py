@@ -1,12 +1,13 @@
-import pygame
 from PPlay.window import *
 from PPlay.sprite import *
 from PPlay.animation import *
 from PPlay.gameimage import *
 from PPlay.collision import *
 from PPlay.keyboard import *
+from PPlay.mouse import *
 from sala import *
 from pygame import *
+import math
 import mapgenerator
 
 # DEFINIÇÃO DA JANELA
@@ -16,6 +17,7 @@ janela.set_background_color((22,22,22))
 
 # DISPOSITIVOS DE ENTRADA
 key_input = keyboard.Keyboard()
+cursor = Mouse()
 
 # SPRITES E ANIMAÇÕES
 jogador = Sprite('assets/gato_animacao-Sheet.png',18)
@@ -36,12 +38,17 @@ podeMover = True
 velocity_x = 0                                                         # Velocidade atual do jogador no eixo X
 velocity_y = 0                                                         # Velocidade atual do jogador no eixo Y
 
+usandoInvestida = False
+velInvestida = 200
+distInvestida = 200
+timerDistInvestida = 0
+anguloMouse = 0
+
 contadorQuadros = 0
 ultimasCoords = []
 
 # GERAÇÃO DE MAPA
 mapa = mapgenerator.GenerateMap(14,8)
-
 
 #screen_swap
 vel_cam_x = 1550
@@ -92,6 +99,33 @@ while True:
         transitioning = True
         velocity_x-=dc_speed*janela.delta_time()
 
+    # INVESTIDA
+
+    mouse_x_relativo = cursor.get_position()[0] - jogador.x - jogador.width/2
+    mouse_y_relativo = cursor.get_position()[1] - jogador.y - jogador.height/2
+
+    tempoInvestida = distInvestida/velInvestida
+    
+    if(not usandoInvestida):
+        jogador_centro_x = jogador.x - jogador.width / 2
+        jogador_centro_y = jogador.y - jogador.height / 2
+        cursor_x, cursor_y = cursor.get_position()
+        if (jogador_centro_x != 0 or jogador_centro_y != 0) and (cursor_x != 0 or cursor_y != 0):
+            try:
+                anguloMouse = math.degrees(math.acos(((cursor_x-jogador_centro_x)*(-cursor_y-jogador_centro_y))/((cursor_x-jogador_centro_x)*math.sqrt((-cursor_y-jogador_centro_y)**2 + 1))))
+            except:
+                anguloMouse = 0
+        else:
+            anguloMouse = 0
+
+    if(key_input.key_pressed('space')):
+        usandoInvestida = True
+    if(usandoInvestida):
+        timerDistInvestida += janela.delta_time()
+        if(timerDistInvestida <= tempoInvestida):
+            velocity_x = velInvestida * distInvestida
+            velocity_y = velInvestida * distInvestida
+
     if(velocity_x < 10 and velocity_x > -10):                           # Desacelerar jogador (Zerar a velocidade com valores próximos de 0)
         velocity_x = 0
     if(velocity_y < 10 and velocity_y > -10):
@@ -135,7 +169,6 @@ while True:
     if(jogador.x < 0):                                                   # Jogador passou para sala a ESQUERDA
         swapLeft = True
     if(swapLeft):
-        #ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
 
         tempo_resto = w/vel_cam_x
         vel_jogador = (w-jogador.width-20)/tempo_resto
@@ -152,7 +185,6 @@ while True:
     if(jogador.x > w-jogador.width):                                      # Jogador passou para sala a DIREITA
         swapRight = True
     if(swapRight):
-        #ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
 
         tempo_resto = w/vel_cam_x
         vel_jogador = (w-jogador.width-20)/tempo_resto
@@ -169,7 +201,6 @@ while True:
     if(jogador.y < 0):                                                    # Jogador passou para sala a CIMA
         swapUp = True
     if(swapUp):
-        #ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
 
         tempo_resto = h/vel_cam_y
         vel_jogador = (h-jogador.height-10)/tempo_resto
@@ -186,7 +217,6 @@ while True:
     if(jogador.y > h-jogador.height):                                      # Jogador passou para sala a BAIXO
         swapDown = True
     if(swapDown):
-        #ultimasCoords.clear()                                             # Limpa a lista de últimas coordenadas para evitar problemas de posicionamento enquanto muda de tela
 
         tempo_resto = h/vel_cam_y
         vel_jogador = (h-jogador.height-10)/tempo_resto
@@ -201,10 +231,8 @@ while True:
             timer = 0
 
     janela.set_title(v_str)
-    v_str = 'x: ' + str(jogador.x) + ' y: ' + str(jogador.y)
+    v_str = 'x: ' + str(mouse_x_relativo) + ' y: ' + str(mouse_y_relativo) + ' ang: ' + str(anguloMouse)
 
-    #if(bola.rect.y >= h-bola.height or bola.rect.y <= 0):
-        #velocity_y *= -1
     janela.set_background_color((22,22,22))
     
     for s in todos_sprites:
