@@ -23,7 +23,9 @@ class Inimigo:
         self.image.draw()
 
     def Stalk(self, target):
-        self.move
+        # Vetor normalizado entre inimigo e alvo
+        #target.
+        pass
 
     def Update(self):
         if(self.state==0):

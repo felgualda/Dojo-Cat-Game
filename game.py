@@ -20,8 +20,10 @@ def Jogar():
 
     global velocity_y, velocity_x
     global usandoInvestida, velInvestida, distInvestida, timerDistInvestida
+    global cooldownInvestida, cooldownInvestidaTimer
 
     global anguloMouse
+    global vet_x, vet_y
     global contadorQuadros
     global ultimasCoords
 
@@ -36,66 +38,77 @@ def Jogar():
 
     global v_str
 
-
     while True:
 
         # MOVIMENTO DO JOGADOR
-        if(key_input.key_pressed('w')):                                      # Tecla W Pressionada
+        if(key_input.key_pressed('w') and not usandoInvestida):                                      # Tecla W Pressionada
             velocity_y = -velMovimento
-        elif(velocity_y < 0):
-            velocity_y+=dc_speed*janela.delta_time()
+        elif(velocity_y < 0 and not usandoInvestida):
+            transitioning = True
+            velocity_y = 0
+            #velocity_y+=dc_speed*janela.delta_time()
 
-        if(key_input.key_pressed('s')):                                      # Tecla S Pressionada
+        if(key_input.key_pressed('s') and not usandoInvestida):                                      # Tecla S Pressionada
             velocity_y = velMovimento
-        elif(velocity_y > 0):
-            velocity_y-=dc_speed*janela.delta_time()
+        elif(velocity_y > 0 and not usandoInvestida):
+            velocity_y = 0
+            transitioning = True
+            #velocity_y-=dc_speed*janela.delta_time()
         
-        if(key_input.key_pressed('a')):                                      # Tecla A Pressionada
+        if(key_input.key_pressed('a') and not usandoInvestida):                                      # Tecla A Pressionada
             velocity_x = -velMovimento
             ultimaDir = 'left'
             transitioning = False
-        elif(velocity_x < 0):
+        elif(velocity_x < 0 and not usandoInvestida):
             transitioning = True
-            velocity_x+=dc_speed*janela.delta_time()
+            velocity_x = 0
+            #velocity_x+=dc_speed*janela.delta_time()
 
-        if(key_input.key_pressed('d')):                                     # Tecla D Pressionada
+        if(key_input.key_pressed('d') and not usandoInvestida):                                     # Tecla D Pressionada
             velocity_x = velMovimento
             ultimaDir = 'right'
             transitioning = False
-        elif(velocity_x > 0):
+        elif(velocity_x > 0 and not usandoInvestida):
+            velocity_x = 0
             transitioning = True
-            velocity_x-=dc_speed*janela.delta_time()
+            #velocity_x-=dc_speed*janela.delta_time()
 
         # INVESTIDA
-
-        mouse_x_relativo = cursor.get_position()[0] - jogador.x - jogador.width/2
-        mouse_y_relativo = cursor.get_position()[1] - jogador.y - jogador.height/2
-
-        tempoInvestida = distInvestida/velInvestida
-        
         if(not usandoInvestida):
-            jogador_centro_x = jogador.x - jogador.width / 2
-            jogador_centro_y = jogador.y - jogador.height / 2
-            cursor_x, cursor_y = cursor.get_position()
-            if (jogador_centro_x != 0 or jogador_centro_y != 0) and (cursor_x != 0 or cursor_y != 0):
-                try:
-                    anguloMouse = math.degrees(math.acos(((cursor_x-jogador_centro_x)*(-cursor_y-jogador_centro_y))/((cursor_x-jogador_centro_x)*math.sqrt((-cursor_y-jogador_centro_y)**2 + 1))))
-                except:
-                    anguloMouse = 0
-            else:
-                anguloMouse = 0
+            cooldownInvestidaTimer += janela.delta_time()
 
-        if(key_input.key_pressed('space')):
+            jogador_centro_x = jogador.x + jogador.width / 2
+            jogador_centro_y = jogador.y + jogador.height / 2
+            cursor_x, cursor_y = cursor.get_position()
+
+            mouse_x_relativo = cursor_x - jogador_centro_x
+            mouse_y_relativo = cursor_y - jogador_centro_y
+
+            tempoInvestida = distInvestida/velInvestida
+
+            if (jogador_centro_x != 0 or jogador_centro_y != 0) and (cursor_x != 0 or cursor_y != 0):
+                vet_x = (mouse_x_relativo)  / (math.sqrt((mouse_x_relativo)**2 + (mouse_y_relativo)**2))
+                vet_y = (mouse_y_relativo) / (math.sqrt((mouse_y_relativo)**2 + (mouse_x_relativo)**2))
+            else:
+                vet_x = 0
+                vet_y = 0
+
+        if(key_input.key_pressed('space') and not usandoInvestida and cooldownInvestidaTimer > cooldownInvestida):
             usandoInvestida = True
         if(usandoInvestida):
             timerDistInvestida += janela.delta_time()
             if(timerDistInvestida <= tempoInvestida):
-                velocity_x = velInvestida * distInvestida
-                velocity_y = velInvestida * distInvestida
+                velocity_x = velInvestida * vet_x
+                velocity_y = velInvestida * vet_y
+            else:
+                cooldownInvestidaTimer = 0
+                usandoInvestida = False
+                timerDistInvestida = 0
 
-        if(velocity_x < 10 and velocity_x > -10):                           # Desacelerar jogador (Zerar a velocidade com valores próximos de 0)
+
+        if(velocity_x < 10 and velocity_x > -10 and not usandoInvestida):                           # Desacelerar jogador (Zerar a velocidade com valores próximos de 0)
             velocity_x = 0
-        if(velocity_y < 10 and velocity_y > -10):
+        if(velocity_y < 10 and velocity_y > -10 and not usandoInvestida):
             velocity_y = 0            
 
         # COLISÃO DO JOGADOR
@@ -109,26 +122,30 @@ def Jogar():
 
         # SPRITE DO JOGADOR
         if(velocity_x == velMovimento):                                                  # Se estiver se movendo pra direita, estado da animação 0 (Direita)
-            if jogador.get_curr_frame() < 2 or jogador.get_curr_frame() > 9:
-                jogador.set_sequence(2, 9, True)
+            jogador.setAnim(1)
 
         if(velocity_x == -velMovimento):                                                # Se estiver se movendo pra esquerda, estado da animação 0 (Esquerda)
-            if jogador.get_curr_frame() < 11 or jogador.get_curr_frame() > 18:
-                jogador.set_sequence(11, 18, True)
+            jogador.setAnim(2)
         
-        if(transitioning):
+        if(velocity_y == velMovimento or velocity_y == -velMovimento):
             if(ultimaDir=='left'):
-                jogador.set_curr_frame(10)
+                jogador.setAnim(2)
+                
             if(ultimaDir=='right'):
-                jogador.set_curr_frame(1)
+                jogador.setAnim(1)
 
-        if(velocity_x == 0):
-            transitioning = False
 
+        if(velocity_x == 0 and velocity_y == 0):
             if(ultimaDir=='left'):
-                jogador.set_sequence(9,9,True)
+                jogador.image.set_sequence(9,9,True)
             if(ultimaDir=='right'):
-                jogador.set_sequence(0,0,True)
+                jogador.image.set_sequence(0,0,True)
+
+        if(usandoInvestida):
+            if(ultimaDir=='left'):
+                jogador.setAnim(3)
+            if(ultimaDir=='right'):
+                jogador.setAnim(4)
 
 
         # MOVIMENTO ENTRE SALAS
@@ -198,7 +215,7 @@ def Jogar():
                 timer = 0
 
         janela.set_title(v_str)
-        v_str = 'x: ' + str(mouse_x_relativo) + ' y: ' + str(mouse_y_relativo) + ' ang: ' + str(anguloMouse)
+        v_str = 'vetx: ' + str(vet_x) + ' vety: ' + str(vet_y)
 
         janela.set_background_color((22,22,22))
         

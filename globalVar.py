@@ -6,6 +6,7 @@ from PPlay.collision import *
 from PPlay.keyboard import *
 from PPlay.mouse import *
 import mapgenerator
+from jogadorClass import *
 
 # JANELA E DEFINIÇOES
 w,h = 1200,675
@@ -16,7 +17,7 @@ key_input = keyboard.Keyboard()
 cursor = Mouse()
 
 # SPRITES
-jogador = Sprite('assets/gato_animacao-Sheet.png',18)
+jogador = Jogador((w/2-40.5,h/2-40.5))
 ultimaDir = 'right'
 transitioning = False
 
@@ -30,10 +31,15 @@ velocity_x = 0                                                         # Velocid
 velocity_y = 0                                                         # Velocidade atual do jogador no eixo Y
 
 usandoInvestida = False
-velInvestida = 200
-distInvestida = 200
+velInvestida = 1650
+distInvestida = 230
 timerDistInvestida = 0
-anguloMouse = 0
+
+cooldownInvestida = 2
+cooldownInvestidaTimer = 2
+
+vet_x = 0
+vet_y = 0
 
 contadorQuadros = 0
 ultimasCoords = []
