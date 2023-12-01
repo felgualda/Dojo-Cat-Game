@@ -5,6 +5,7 @@ from PPlay.gameimage import *
 from PPlay.collision import *
 from PPlay.keyboard import *
 from PPlay.mouse import *
+from vida import *
 import math
 
 from globalVar import *
@@ -29,6 +30,7 @@ def Jogar():
 
     global mapa
 
+    global active_sala
     global vel_cam_x
     global vel_cam_y
     global swapRight, swapLeft, swapDown, swapUp
@@ -37,6 +39,9 @@ def Jogar():
     global dc_speed
 
     global v_str
+
+    cursor.hide()
+    janela.set_title('Dojo Cat - Build Incompleta')
 
     while True:
 
@@ -93,7 +98,7 @@ def Jogar():
                 vet_x = 0
                 vet_y = 0
 
-        if(key_input.key_pressed('space') and not usandoInvestida and cooldownInvestidaTimer > cooldownInvestida):
+        if(key_input.key_pressed('space') and not usandoInvestida and cooldownInvestidaTimer > cooldownInvestida and not (swapDown or swapLeft or swapRight or swapUp)):
             usandoInvestida = True
         if(usandoInvestida):
             timerDistInvestida += janela.delta_time()
@@ -127,26 +132,26 @@ def Jogar():
         if(velocity_x == -velMovimento):                                                # Se estiver se movendo pra esquerda, estado da animação 0 (Esquerda)
             jogador.setAnim(2)
         
-        if(velocity_y == velMovimento or velocity_y == -velMovimento):
+        if((velocity_y == velMovimento or velocity_y == -velMovimento) and not usandoInvestida):
             if(ultimaDir=='left'):
                 jogador.setAnim(2)
                 
             if(ultimaDir=='right'):
                 jogador.setAnim(1)
 
+        if(usandoInvestida):
+            if(mouse_x_relativo > 0):
+                jogador.setAnim(3)
+                ultimaDir = 'right'
+            if(mouse_x_relativo < 0):
+                jogador.setAnim(4)
+                ultimaDir = 'left'
 
         if(velocity_x == 0 and velocity_y == 0):
             if(ultimaDir=='left'):
                 jogador.image.set_sequence(9,9,True)
             if(ultimaDir=='right'):
                 jogador.image.set_sequence(0,0,True)
-
-        if(usandoInvestida):
-            if(ultimaDir=='left'):
-                jogador.setAnim(3)
-            if(ultimaDir=='right'):
-                jogador.setAnim(4)
-
 
         # MOVIMENTO ENTRE SALAS
 
@@ -163,6 +168,7 @@ def Jogar():
                 jogador.move_x(vel_jogador*janela.delta_time())
                 timer += janela.delta_time()
             else:
+                active_sala[0] -= 1
                 swapLeft = False
                 timer = 0
 
@@ -179,6 +185,7 @@ def Jogar():
                 jogador.move_x(-vel_jogador*janela.delta_time())
                 timer += janela.delta_time()
             else:
+                active_sala[0] += 1
                 swapRight = False
                 timer = 0
             
@@ -197,6 +204,7 @@ def Jogar():
             else:
                 swapUp = False
                 timer = 0
+                active_sala[1] -= 1
 
         if(jogador.y > h-jogador.height):                                      # Jogador passou para sala a BAIXO
             swapDown = True
@@ -213,9 +221,10 @@ def Jogar():
             else:
                 swapDown = False
                 timer = 0
+                active_sala[1] += 1
 
-        janela.set_title(v_str)
-        v_str = 'vetx: ' + str(vet_x) + ' vety: ' + str(vet_y)
+        #janela.set_title(v_str)
+        #v_str = str(active_sala)
 
         janela.set_background_color((22,22,22))
         
@@ -226,14 +235,23 @@ def Jogar():
 
         for s in todos_sprites:
             s.DrawFrenteJogador()
+            if(active_sala[0] == s.adress[0] and active_sala[1] == s.adress[1] and not swapDown and not swapLeft and not swapRight and not swapUp):
+                s.UpdateEntities(jogador,janela)
+
         if(not swapLeft and not swapRight and not swapDown and not swapUp and podeMover):
             jogador.move_x(velocity_x*janela.delta_time())
             jogador.move_y(velocity_y*janela.delta_time())
-        
+
         # REGISTRAR COORDENADAS DOS ÚLTIMOS QUADROS PARA COLISÃO
         ultimasCoords.append((jogador.x,jogador.y))
         if(len(ultimasCoords) > 2):
             ultimasCoords.pop(0)
-        
+
+        # CROSSHAIR
+        crosshair.set_position(cursor_x-crosshair.width/2,cursor_y-crosshair.height/2)
+        crosshair.draw()
+
+        drawCoracoes()
+
         jogador.update()
         janela.update()

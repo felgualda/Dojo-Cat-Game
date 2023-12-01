@@ -8,7 +8,7 @@ class Jogador:
 
         self.image = Sprite('assets/gato_animacao-Sheet.png',20)
 
-        self.image.set_sequence_time(0,19,50,True)
+        self.image.set_sequence_time(0,20,50,True)
         self.image.set_sequence(0,0,True)
 
         self.image.set_position(self.x-self.image.width/2,self.y-self.image.height/2)
@@ -36,8 +36,9 @@ class Jogador:
         self.image.set_position(self.x, self.y)
 
     def update(self):
+        #print(str(self.image.get_initial_frame()) + ' ' + str(self.image.get_final_frame()) + ' ' + str(self.image.get_curr_frame()))
         self.image.update()
-
+        
     def setAnim(self, state):
         if(state==1):
             if self.image.get_curr_frame() < 2 or self.image.get_curr_frame() > 9:
@@ -48,8 +49,10 @@ class Jogador:
                 self.image.set_sequence(11, 18, True)
 
         if(state==3):
-            self.image.set_sequence(18, 18, True)
-            self.image.set_curr_frame(18)
+            if not self.image.get_curr_frame() == 18:
+                self.image.set_sequence(18, 18, True)
+                self.image.set_curr_frame(18)
         if(state==4):
-            self.image.set_sequence(19, 19, True)
-            self.image.set_curr_frame(19)
+            if not self.image.get_curr_frame() == 19:
+                self.image.set_sequence(19, 19, True)
+                self.image.set_curr_frame(19)

@@ -8,7 +8,7 @@ from PPlay.mouse import *
 from globalVar import *
 from sala import *
 from pygame import *
-import game
+import menu
 import mapgenerator
 
 janela.set_background_color((22,22,22))
@@ -16,5 +16,7 @@ janela.set_background_color((22,22,22))
 
 print(mapa)
 mapgenerator.SetSalas(mapa)
+cursor.hide()
 
-game.Jogar()
+menu.MenuPrincipal()
+#game.Jogar()

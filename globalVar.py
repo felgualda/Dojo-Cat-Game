@@ -20,6 +20,7 @@ cursor = Mouse()
 jogador = Jogador((w/2-40.5,h/2-40.5))
 ultimaDir = 'right'
 transitioning = False
+crosshair = Sprite('assets/crosshair.png')
 
 todos_sprites = mapgenerator.todasSalas
 
@@ -31,7 +32,7 @@ velocity_x = 0                                                         # Velocid
 velocity_y = 0                                                         # Velocidade atual do jogador no eixo Y
 
 usandoInvestida = False
-velInvestida = 1650
+velInvestida = 800
 distInvestida = 230
 timerDistInvestida = 0
 
@@ -48,6 +49,8 @@ ultimasCoords = []
 mapa = mapgenerator.GenerateMap(14,8)
 
 # SCREEN SWAP
+active_sala = [0,0]
+
 vel_cam_x = 1550
 vel_cam_y = 1000
 swapRight = False
@@ -58,5 +61,11 @@ timer = 0
 
 # DESACELERAÇÃO
 dc_speed = 1200
+
+# VIDA DO JOGADOR
+vida_max = 4
+vida_atual = vida_max
+pos_barravida = (15,h - 50)
+offset_barravida = 5
 
 v_str = ''

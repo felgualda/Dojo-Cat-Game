@@ -1,4 +1,5 @@
 from PPlay.sprite import *
+from inimigo import *
 
 class Sala:
     
@@ -37,6 +38,11 @@ class Sala:
                 self.col.append(Sprite('assets/sala/down_corner_placeholder.png'))
             else:
                 self.col.append(Sprite('assets/sala/down_placeholder.png'))
+
+        # INIMIGOS
+        self.inimigos = []
+        if(self.var == 1):
+            self.inimigos = [Inimigo((self.x + 1200/2, self.y + 675/2),1)]
         
 
         # RENDER DEPOIS
@@ -97,6 +103,10 @@ class Sala:
             i.x += speed
         for i in self.portas:
             i.x += speed
+
+        for i in self.inimigos:
+            i.move_x(speed)
+
         self.sprite.set_position(self.x, self.y)
 
     def Mover_Y(self, speed):
@@ -107,7 +117,15 @@ class Sala:
             i.y += speed
         for i in self.portas:
             i.y += speed
+
+        for i in self.inimigos:
+            i.move_y(speed)
+
         self.sprite.set_position(self.x, self.y)
+
+    def UpdateEntities(self,jogador,janela):
+        for i in range(len(self.inimigos)):
+            self.inimigos[i].Update(jogador,janela)
 
     def DrawSala(self):
         self.sprite.draw()
@@ -121,7 +139,7 @@ class Sala:
             self.portas[2].draw()
         if self.portaEsquerda:
             self.portas[3].draw()
-    
+
     def DrawFrenteJogador(self):
         if self.portaDireita:
             self.renderFrente[1].draw()
@@ -136,3 +154,6 @@ class Sala:
         
         if self.portaCima:
             self.renderFrente[4].draw()
+
+        for i in self.inimigos:
+            i.Draw()
