@@ -23,6 +23,8 @@ def Jogar():
     global usandoInvestida, velInvestida, distInvestida, timerDistInvestida
     global cooldownInvestida, cooldownInvestidaTimer
 
+    global attacking
+
     global anguloMouse
     global vet_x, vet_y
     global contadorQuadros
@@ -114,7 +116,12 @@ def Jogar():
         if(velocity_x < 10 and velocity_x > -10 and not usandoInvestida):                           # Desacelerar jogador (Zerar a velocidade com valores próximos de 0)
             velocity_x = 0
         if(velocity_y < 10 and velocity_y > -10 and not usandoInvestida):
-            velocity_y = 0            
+            velocity_y = 0          
+
+        # ATAQUE
+        if(cursor.is_button_pressed(1)):
+            attacking = True
+            jogador.setAnim(5)  
 
         # COLISÃO DO JOGADOR
         for i in todos_sprites:
@@ -147,9 +154,9 @@ def Jogar():
                 jogador.setAnim(4)
                 ultimaDir = 'left'
 
-        if(velocity_x == 0 and velocity_y == 0):
+        if(velocity_x == 0 and velocity_y == 0 and not attacking):
             if(ultimaDir=='left'):
-                jogador.image.set_sequence(9,9,True)
+                jogador.image.set_sequence(8,8,True)
             if(ultimaDir=='right'):
                 jogador.image.set_sequence(0,0,True)
 

@@ -6,7 +6,7 @@ class Jogador:
         self.x = pos[0]
         self.y = pos[1]
 
-        self.image = Sprite('assets/gato_animacao-Sheet.png',20)
+        self.image = Sprite('assets/gato_animacao-Sheet.png',26)
 
         self.image.set_sequence_time(0,20,50,True)
         self.image.set_sequence(0,0,True)
@@ -41,18 +41,24 @@ class Jogador:
         
     def setAnim(self, state):
         if(state==1):
-            if self.image.get_curr_frame() < 2 or self.image.get_curr_frame() > 9:
-                self.image.set_sequence(2, 9, True)
+            if self.image.get_curr_frame() < 1 or self.image.get_curr_frame() > 8:
+                self.image.set_sequence(1, 8, True)
 
         if(state==2):
-            if self.image.get_curr_frame() < 11 or self.image.get_curr_frame() > 18:
-                self.image.set_sequence(11, 18, True)
+            if self.image.get_curr_frame() < 9 or self.image.get_curr_frame() > 16:
+                self.image.set_sequence(9, 16, True)
 
         if(state==3):
-            if not self.image.get_curr_frame() == 18:
-                self.image.set_sequence(18, 18, True)
-                self.image.set_curr_frame(18)
+            if not self.image.get_curr_frame() == 16:
+                self.image.set_sequence(16, 16, True)
+                self.image.set_curr_frame(16)
         if(state==4):
-            if not self.image.get_curr_frame() == 19:
-                self.image.set_sequence(19, 19, True)
-                self.image.set_curr_frame(19)
+            if not self.image.get_curr_frame() == 17:
+                self.image.set_sequence(17, 17, True)
+                self.image.set_curr_frame(17)
+        if(state==5):
+            if self.image.get_curr_frame() < 18 or self.image.get_curr_frame() > 21:
+                self.image.set_sequence(18, 21, False)
+        if(state==6):
+            if self.image.get_curr_frame() < 22 or self.image.get_curr_frame() > 25:
+                self.image.set_sequence(22, 25, False)

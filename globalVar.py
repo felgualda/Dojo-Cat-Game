@@ -39,6 +39,8 @@ timerDistInvestida = 0
 cooldownInvestida = 2
 cooldownInvestidaTimer = 2
 
+attacking = False
+
 vet_x = 0
 vet_y = 0
 
