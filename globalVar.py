@@ -17,12 +17,13 @@ key_input = keyboard.Keyboard()
 cursor = Mouse()
 
 # SPRITES
-jogador = Jogador((w/2-40.5,h/2-40.5))
+jogador = Jogador((0,0))
 ultimaDir = 'right'
 transitioning = False
 crosshair = Sprite('assets/crosshair.png')
+fundoEscuro = Sprite('assets/fundopause.png')
 
-todos_sprites = mapgenerator.todasSalas
+todos_sprites = []
 
 # CONFIGURAÇÕES E VARIÁVEIS DO JOGO
 velMovimento = 270
@@ -40,6 +41,7 @@ cooldownInvestida = 2
 cooldownInvestidaTimer = 2
 
 attacking = False
+ataqueTimer = 0
 
 vet_x = 0
 vet_y = 0
@@ -48,7 +50,7 @@ contadorQuadros = 0
 ultimasCoords = []
 
 # GERAÇÃO DE MAPA
-mapa = mapgenerator.GenerateMap(14,8)
+mapa = []
 
 # SCREEN SWAP
 active_sala = [0,0]

@@ -7,13 +7,40 @@ from PPlay.keyboard import *
 from PPlay.mouse import *
 from vida import *
 import math
+import menu
+import mapgenerator
 
 from globalVar import *
+
+def Reset():
+    global jogador
+    global mapa
+    global active_sala
+    global todos_sprites
+
+    # GERA O MAPA
+    for s in todos_sprites:
+        s.Delete()
+    todos_sprites.clear()
+    mapgenerator.spawn.clear()
+    mapgenerator.todasSalas.clear()
+    mapgenerator.lista_coords.clear()
+    mapa = []
+    mapa = mapgenerator.GenerateMap(14,8)
+    mapgenerator.SetSalas(mapa)
+    todos_sprites = mapgenerator.todasSalas
+
+    # POSICIONA JOGADOR NO INICIO
+    jogador = Jogador((w/2-40.5,h/2-40.5))
+
+    # SALA ATIVA É A INICIAL
+    active_sala = [0,0]
 
 def Jogar():
     # VARIÁVEIS GLOBAIS
     global w,h
     global janela
+    global fundoEscuro
 
     global jogador
     global ultimaDir
@@ -22,8 +49,6 @@ def Jogar():
     global velocity_y, velocity_x
     global usandoInvestida, velInvestida, distInvestida, timerDistInvestida
     global cooldownInvestida, cooldownInvestidaTimer
-
-    global attacking
 
     global anguloMouse
     global vet_x, vet_y
@@ -42,67 +67,71 @@ def Jogar():
 
     global v_str
 
+    Reset()
+
+
     cursor.hide()
     janela.set_title('Dojo Cat - Build Incompleta')
-
+    vidas = 3
+    pause = 0
     while True:
+        jogador_centro_x = jogador.x + jogador.width / 2
+        jogador_centro_y = jogador.y + jogador.height / 2
+        cursor_x, cursor_y = cursor.get_position()
 
         # MOVIMENTO DO JOGADOR
-        if(key_input.key_pressed('w') and not usandoInvestida):                                      # Tecla W Pressionada
-            velocity_y = -velMovimento
-        elif(velocity_y < 0 and not usandoInvestida):
-            transitioning = True
-            velocity_y = 0
-            #velocity_y+=dc_speed*janela.delta_time()
+        if(pause == 0):
+            if(key_input.key_pressed('w') and not usandoInvestida):                                      # Tecla W Pressionada
+                velocity_y = -velMovimento
+            elif(velocity_y < 0 and not usandoInvestida):
+                transitioning = True
+                velocity_y = 0
+                #velocity_y+=dc_speed*janela.delta_time()
 
-        if(key_input.key_pressed('s') and not usandoInvestida):                                      # Tecla S Pressionada
-            velocity_y = velMovimento
-        elif(velocity_y > 0 and not usandoInvestida):
-            velocity_y = 0
-            transitioning = True
-            #velocity_y-=dc_speed*janela.delta_time()
-        
-        if(key_input.key_pressed('a') and not usandoInvestida):                                      # Tecla A Pressionada
-            velocity_x = -velMovimento
-            ultimaDir = 'left'
-            transitioning = False
-        elif(velocity_x < 0 and not usandoInvestida):
-            transitioning = True
-            velocity_x = 0
-            #velocity_x+=dc_speed*janela.delta_time()
+            if(key_input.key_pressed('s') and not usandoInvestida):                                      # Tecla S Pressionada
+                velocity_y = velMovimento
+            elif(velocity_y > 0 and not usandoInvestida):
+                velocity_y = 0
+                transitioning = True
+                #velocity_y-=dc_speed*janela.delta_time()
+            
+            if(key_input.key_pressed('a') and not usandoInvestida):                                      # Tecla A Pressionada
+                velocity_x = -velMovimento
+                ultimaDir = 'left'
+                transitioning = False
+            elif(velocity_x < 0 and not usandoInvestida):
+                transitioning = True
+                velocity_x = 0
+                #velocity_x+=dc_speed*janela.delta_time()
 
-        if(key_input.key_pressed('d') and not usandoInvestida):                                     # Tecla D Pressionada
-            velocity_x = velMovimento
-            ultimaDir = 'right'
-            transitioning = False
-        elif(velocity_x > 0 and not usandoInvestida):
-            velocity_x = 0
-            transitioning = True
-            #velocity_x-=dc_speed*janela.delta_time()
+            if(key_input.key_pressed('d') and not usandoInvestida):                                     # Tecla D Pressionada
+                velocity_x = velMovimento
+                ultimaDir = 'right'
+                transitioning = False
+            elif(velocity_x > 0 and not usandoInvestida):
+                velocity_x = 0
+                transitioning = True
+                #velocity_x-=dc_speed*janela.delta_time()
 
-        # INVESTIDA
-        if(not usandoInvestida):
-            cooldownInvestidaTimer += janela.delta_time()
+            # INVESTIDA
+            if(not usandoInvestida):
+                cooldownInvestidaTimer += janela.delta_time()
 
-            jogador_centro_x = jogador.x + jogador.width / 2
-            jogador_centro_y = jogador.y + jogador.height / 2
-            cursor_x, cursor_y = cursor.get_position()
+                mouse_x_relativo = cursor_x - jogador_centro_x
+                mouse_y_relativo = cursor_y - jogador_centro_y
 
-            mouse_x_relativo = cursor_x - jogador_centro_x
-            mouse_y_relativo = cursor_y - jogador_centro_y
+                tempoInvestida = distInvestida/velInvestida
 
-            tempoInvestida = distInvestida/velInvestida
+                if (jogador_centro_x != 0 or jogador_centro_y != 0) and (cursor_x != 0 or cursor_y != 0):
+                    vet_x = (mouse_x_relativo)  / (math.sqrt((mouse_x_relativo)**2 + (mouse_y_relativo)**2))
+                    vet_y = (mouse_y_relativo) / (math.sqrt((mouse_y_relativo)**2 + (mouse_x_relativo)**2))
+                else:
+                    vet_x = 0
+                    vet_y = 0
 
-            if (jogador_centro_x != 0 or jogador_centro_y != 0) and (cursor_x != 0 or cursor_y != 0):
-                vet_x = (mouse_x_relativo)  / (math.sqrt((mouse_x_relativo)**2 + (mouse_y_relativo)**2))
-                vet_y = (mouse_y_relativo) / (math.sqrt((mouse_y_relativo)**2 + (mouse_x_relativo)**2))
-            else:
-                vet_x = 0
-                vet_y = 0
-
-        if(key_input.key_pressed('space') and not usandoInvestida and cooldownInvestidaTimer > cooldownInvestida and not (swapDown or swapLeft or swapRight or swapUp)):
+        if(key_input.key_pressed('space') and not usandoInvestida and cooldownInvestidaTimer > cooldownInvestida and not (swapDown or swapLeft or swapRight or swapUp) and pause == 0):
             usandoInvestida = True
-        if(usandoInvestida):
+        if(usandoInvestida and pause == 0):
             timerDistInvestida += janela.delta_time()
             if(timerDistInvestida <= tempoInvestida):
                 velocity_x = velInvestida * vet_x
@@ -116,12 +145,7 @@ def Jogar():
         if(velocity_x < 10 and velocity_x > -10 and not usandoInvestida):                           # Desacelerar jogador (Zerar a velocidade com valores próximos de 0)
             velocity_x = 0
         if(velocity_y < 10 and velocity_y > -10 and not usandoInvestida):
-            velocity_y = 0          
-
-        # ATAQUE
-        if(cursor.is_button_pressed(1)):
-            attacking = True
-            jogador.setAnim(5)  
+            velocity_y = 0            
 
         # COLISÃO DO JOGADOR
         for i in todos_sprites:
@@ -154,7 +178,7 @@ def Jogar():
                 jogador.setAnim(4)
                 ultimaDir = 'left'
 
-        if(velocity_x == 0 and velocity_y == 0 and not attacking):
+        if(velocity_x == 0 and velocity_y == 0):
             if(ultimaDir=='left'):
                 jogador.image.set_sequence(8,8,True)
             if(ultimaDir=='right'):
@@ -164,7 +188,7 @@ def Jogar():
 
         if(jogador.x < 0):                                                   # Jogador passou para sala a ESQUERDA
             swapLeft = True
-        if(swapLeft):
+        if(swapLeft and pause == 0):
 
             tempo_resto = w/vel_cam_x
             vel_jogador = (w-jogador.width-20)/tempo_resto
@@ -181,7 +205,7 @@ def Jogar():
 
         if(jogador.x > w-jogador.width):                                      # Jogador passou para sala a DIREITA
             swapRight = True
-        if(swapRight):
+        if(swapRight and pause == 0):
 
             tempo_resto = w/vel_cam_x
             vel_jogador = (w-jogador.width-20)/tempo_resto
@@ -198,7 +222,7 @@ def Jogar():
             
         if(jogador.y < 0):                                                    # Jogador passou para sala a CIMA
             swapUp = True
-        if(swapUp):
+        if(swapUp and pause == 0):
 
             tempo_resto = h/vel_cam_y
             vel_jogador = (h-jogador.height-10)/tempo_resto
@@ -215,7 +239,7 @@ def Jogar():
 
         if(jogador.y > h-jogador.height):                                      # Jogador passou para sala a BAIXO
             swapDown = True
-        if(swapDown):
+        if(swapDown and pause == 0):
 
             tempo_resto = h/vel_cam_y
             vel_jogador = (h-jogador.height-10)/tempo_resto
@@ -242,23 +266,74 @@ def Jogar():
 
         for s in todos_sprites:
             s.DrawFrenteJogador()
-            if(active_sala[0] == s.adress[0] and active_sala[1] == s.adress[1] and not swapDown and not swapLeft and not swapRight and not swapUp):
+            if(active_sala[0] == s.adress[0] and active_sala[1] == s.adress[1] and not swapDown and not swapLeft and not swapRight and not swapUp and pause == 0):
                 s.UpdateEntities(jogador,janela)
 
-        if(not swapLeft and not swapRight and not swapDown and not swapUp and podeMover):
+        if(not swapLeft and not swapRight and not swapDown and not swapUp and podeMover and pause ==0):
             jogador.move_x(velocity_x*janela.delta_time())
             jogador.move_y(velocity_y*janela.delta_time())
 
         # REGISTRAR COORDENADAS DOS ÚLTIMOS QUADROS PARA COLISÃO
-        ultimasCoords.append((jogador.x,jogador.y))
-        if(len(ultimasCoords) > 2):
-            ultimasCoords.pop(0)
+        if(pause==0):
+            ultimasCoords.append((jogador.x,jogador.y))
+            if(len(ultimasCoords) > 2):
+                ultimasCoords.pop(0)
 
+        drawCoracoes()
+        # TELA DE MORTE:
+
+        if(key_input.key_pressed("p")):
+            vidas -=1
+        if vidas <= 0:
+            pause = 1
+            fundoEscuro.draw()
+            janela.draw_text('VOCÊ MORREU',200,100,150,(255,0,0),'chapaza')
+            botmenu = GameImage('assets/botaomenu.png')
+            botmenu.set_position(janela.width/2 - botmenu.width/2, janela.height/2 - botmenu.height/2)
+            if cursor.is_over_area((botmenu.x , botmenu.y),(botmenu.x + botmenu.width , botmenu.y + botmenu.height)):
+                botmenu = GameImage('assets/botaomenu2.png')
+                botmenu.set_position(janela.width/2 - botmenu.width/2, janela.height/2 - botmenu.height/2)
+            else:
+                botmenu = GameImage('assets/botaomenu.png')
+                botmenu.set_position(janela.width/2 - botmenu.width/2, janela.height/2 - botmenu.height/2)
+            botmenu.draw()
+            if cursor.is_over_area((botmenu.x , botmenu.y),(botmenu.x + botmenu.width , botmenu.y + botmenu.height)) and cursor.is_button_pressed(1): 
+                menu.MenuPrincipal()
+
+        # TELA DE PAUSE::
+
+        if(key_input.key_pressed("esc")):
+            pause = 1
+        if pause == 1 and vidas > 0:
+            fundoEscuro.draw()
+            janela.draw_text('JOGO PAUSADO',200,100,150,(255,255,255),'chapaza')
+            continua = GameImage('assets/botaocontinua.png')
+            continua.set_position(janela.width/2 - continua.width/2, janela.height/2 - continua.height/2)
+            if cursor.is_over_area((continua.x , continua.y),(continua.x + continua.width , continua.y + continua.height)):
+                continua = GameImage('assets/botaocontinua2.png')
+                continua.set_position(janela.width/2 - continua.width/2, janela.height/2 - continua.height/2)
+            else:
+                continua = GameImage('assets/botaocontinua.png')
+                continua.set_position(janela.width/2 - continua.width/2, janela.height/2 - continua.height/2)
+            continua.draw()
+            menupause = GameImage('assets/botaomenu3.png')
+            menupause.set_position(janela.width/2 - menupause.width/2, janela.height/2 + menupause.height)
+            if cursor.is_over_area((menupause.x , menupause.y),(menupause.x + menupause.width , menupause.y + menupause.height)):
+                menupause = GameImage('assets/botaomenu4.png')
+                menupause.set_position(janela.width/2 - menupause.width/2, janela.height/2 + menupause.height)
+            else:
+                menupause = GameImage('assets/botaomenu3.png')
+                menupause.set_position(janela.width/2 - menupause.width/2, janela.height/2 + menupause.height)
+            menupause.draw()
+            if cursor.is_over_area((continua.x , continua.y),(continua.x + continua.width , continua.y + continua.height)) and cursor.is_button_pressed(1): 
+                pause = 0
+            if cursor.is_over_area((menupause.x , menupause.y),(menupause.x + menupause.width , menupause.y + menupause.height)) and cursor.is_button_pressed(1): 
+                menu.MenuPrincipal()
+            
         # CROSSHAIR
         crosshair.set_position(cursor_x-crosshair.width/2,cursor_y-crosshair.height/2)
         crosshair.draw()
-
-        drawCoracoes()
-
-        jogador.update()
+        
+        if(pause==0):
+            jogador.update()
         janela.update()

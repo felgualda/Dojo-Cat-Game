@@ -9,13 +9,9 @@ from globalVar import *
 from sala import *
 from pygame import *
 import menu
-import mapgenerator
 
 janela.set_background_color((22,22,22))
 
-
-print(mapa)
-mapgenerator.SetSalas(mapa)
 cursor.hide()
 
 menu.MenuPrincipal()

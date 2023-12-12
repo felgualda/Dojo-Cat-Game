@@ -3,7 +3,7 @@ from inimigo import *
 
 class Sala:
     
-    def __init__(self, adress, var, clear):
+    def __init__(self, adress, var, cleared):
         
         self.adress = adress
 
@@ -11,7 +11,7 @@ class Sala:
         self.y = self.adress[1] * 675
 
         self.var = var
-        self.clear = clear
+        self.cleared = cleared
 
         self.sprite = Sprite('assets/sala/sala.png')
         self.sprite.set_position(self.x,self.y)
@@ -157,3 +157,10 @@ class Sala:
 
         for i in self.inimigos:
             i.Draw()
+
+    def Delete(self):
+        # DELETA A SALA E TUDO ASSOCIADO A ELA
+        self.inimigos.clear()
+        #self.sprite = Sprite(None)
+        self.portas.clear()
+        self.col.clear()

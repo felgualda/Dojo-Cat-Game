@@ -23,8 +23,9 @@ def MenuPrincipal():
     cursor.unhide()
 
     janela.set_title('Dojo Cat | Menu Principal')
-
+    timer = 0
     while True:
+        timer += janela.delta_time()
     # Botão "jogar" escurecer quando o mouse estiver em cima dele:
 
         if cursor.is_over_area((jogar.x , jogar.y),(jogar.x + jogar.width , jogar.y + jogar.height)):
@@ -54,14 +55,14 @@ def MenuPrincipal():
         
     # Clique nos botões:
         # Botão "Opcões":
-        if cursor.is_over_area((opcoes.x , opcoes.y),(opcoes.x + opcoes.width , opcoes.y + opcoes.height)) and cursor.is_button_pressed(1):   
+        if cursor.is_over_area((opcoes.x , opcoes.y),(opcoes.x + opcoes.width , opcoes.y + opcoes.height)) and cursor.is_button_pressed(1) and timer > 0.5:   
             # Caso o cursor esteja em cima do botão Opções e o
             # botão esquerdo do mouse for apertado -- > Chamar todo o "opcoes.py".
             x = Opcoes()
             print(x)
         
         # Botão "jogar":
-        elif cursor.is_over_area((jogar.x , jogar.y),(jogar.x + jogar.width , jogar.y + jogar.height)) and cursor.is_button_pressed(1):
+        elif cursor.is_over_area((jogar.x , jogar.y),(jogar.x + jogar.width , jogar.y + jogar.height)) and cursor.is_button_pressed(1) and timer > 0.5:
             # Caso o cursor esteja em cima do botão Jogar,
             # e o botão essquerdo do mouse for apertado --> Chamar todo o "jogar.py".
             x = game.Jogar()
@@ -69,7 +70,7 @@ def MenuPrincipal():
         
 
         # Botão "sair":
-        elif cursor.is_over_area(( sair.x ,sair.y),(sair.x + sair.width, sair.y + sair.height )) and cursor.is_button_pressed(1):
+        elif cursor.is_over_area(( sair.x ,sair.y),(sair.x + sair.width, sair.y + sair.height )) and cursor.is_button_pressed(1) and timer > 0.5:
             # Caso o cursor esteja em cimma do botão sair e o
             # botão do mouse for apertado --> Fechar Janela
             janela.close()
