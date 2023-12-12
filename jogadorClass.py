@@ -6,7 +6,9 @@ class Jogador:
         self.x = pos[0]
         self.y = pos[1]
 
-        self.image = Sprite('assets/gato_animacao-Sheet.png',26)
+        self.image = Sprite('assets/gato_animacao-Sheet-teste.png',26)
+
+        self.colisao = Sprite('assets/colisao_player.png')
 
         self.image.set_sequence_time(0,20,60,True)
         self.image.set_sequence(0,0,True)
@@ -17,7 +19,7 @@ class Jogador:
         self.height = self.image.height
 
     def collided(self,col):
-        return self.image.collided(col)
+        return self.colisao.collided(col)
     
     def set_position(self,x,y):
         self.x = x
@@ -26,6 +28,7 @@ class Jogador:
 
     def draw(self):
         self.image.draw()
+        #self.colisao.draw()
 
     def move_x(self,speed):
         self.x += speed
@@ -38,6 +41,7 @@ class Jogador:
     def update(self):
         #print(str(self.image.get_initial_frame()) + ' ' + str(self.image.get_final_frame()) + ' ' + str(self.image.get_curr_frame()))
         self.image.update()
+        self.colisao.set_position(self.x+27,self.y+3)
         
 
     def setAnim(self, state):

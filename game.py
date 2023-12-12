@@ -31,7 +31,7 @@ def Reset():
     todos_sprites = mapgenerator.todasSalas
 
     # POSICIONA JOGADOR NO INICIO
-    jogador = Jogador((w/2-40.5,h/2-40.5))
+    jogador.set_position(w/2-40.5,h/2-40.5)
 
     # SALA ATIVA É A INICIAL
     active_sala = [0,0]
@@ -154,7 +154,10 @@ def Jogar():
                     velocity_x = 0
                     velocity_y = 0
 
-                    jogador.set_position(ultimasCoords[0][0],ultimasCoords[0][1])
+                    try:
+                        jogador.set_position(ultimasCoords[0][0],ultimasCoords[0][1])
+                    except:
+                        pass
 
         # SPRITE DO JOGADOR
         if(velocity_x == velMovimento):                                                  # Se estiver se movendo pra direita, estado da animação 0 (Direita)
