@@ -7,13 +7,18 @@ class Inimigo:
         # Sprites e posições
         self.x = pos[0]
         self.y = pos[1]
+
+        self.tag = 'enemy'
+
+        self.vivo = True
         
         self.var = var
         self.image = Sprite('assets/inimigos/ninja.png')
 
         # Definição de sprite conforme a variação
         if(var == 1):
-            self.image = Sprite('assets/inimigos/ninja.png')
+            self.image = Sprite('assets/inimigos/ninja-Sheet-export.png',24)
+            self.image.set_sequence_time(0,25,120)
 
         self.image.set_position(self.x,self.y)
 
@@ -26,6 +31,13 @@ class Inimigo:
         self.vel_inimigo_max = 100
         self.state = 0
 
+        self.velx = 0
+        self.vely = 0
+
+        self.levouDano = False
+        self.tempoSpriteDano = 0.25
+        self.tempoSpriteTimer = 0
+
     def move_x(self,speed):
         self.x += speed
         self.image.set_position(self.x, self.y)
@@ -37,24 +49,56 @@ class Inimigo:
     def Draw(self):
         self.image.draw()
 
+    def LevarDano(self,dano):
+        self.vida -= dano
+        self.levouDano = True
+
+        if(self.vida <= 0):
+            self.Morrer()
+
+    def Morrer(self):
+        self.vivo = False
+
     def Stalk(self, target, janela):
         # Vetor normalizado entre inimigo e alvo
         #target.
-        norma = math.sqrt((target.x - self.centro_x)**2 + (target.y - self.centro_y)**2)
-        vet_x = (target.x - self.centro_x)/norma
-        vet_y = (target.y - self.centro_y)/norma
+        norma = math.sqrt(((target.x +target.width/2) - self.centro_x)**2 + ((target.y +target.height/2) - self.centro_y)**2)
+        vet_x = ((target.x +target.width/2)- self.centro_x)/norma
+        vet_y = ((target.y+target.height/2)- self.centro_y)/norma
 
-        velx = vet_x * self.vel_inimigo_max * janela.delta_time()
-        vely = vet_y * self.vel_inimigo_max * janela.delta_time()
+        self.velx = vet_x * self.vel_inimigo_max * janela.delta_time()
+        self.vely = vet_y * self.vel_inimigo_max * janela.delta_time()
 
-        self.move_x(velx)
-        self.move_y(vely)
+        if(not self.levouDano):
+            self.move_x(self.velx)
+            self.move_y(self.vely)
 
 
     def Update(self,jogador,janela):
-        self.centro_x = self.x + self.image.width/2
-        self.centro_y = self.y + self.image.height/2
+        if(self.vivo):
+            if(self.levouDano):
+                self.tempoSpriteTimer += janela.delta_time()
+                if(self.velx > 0):
+                    self.image.set_curr_frame(22)
+                if(self.velx < 0):
+                    self.image.set_curr_frame(23)
+            if(self.tempoSpriteTimer >= self.tempoSpriteDano):
+                self.levouDano = False
+                self.tempoSpriteTimer = 0
 
-        if(self.state==0):
-            self.Stalk(jogador,janela)
+            if(self.velx > 0 and not self.levouDano):
+                if self.image.get_curr_frame() < 1 or self.image.get_curr_frame() > 7:
+                    self.image.set_sequence(1,7,True)
+            if(self.velx < 0 and not self.levouDano):
+                if self.image.get_curr_frame() < 8 or self.image.get_curr_frame() > 14:
+                    self.image.set_sequence(8,14,True)
+
+            if(not self.levouDano):
+                self.image.update()
+
+            self.centro_x = self.x + self.image.width/2
+            self.centro_y = self.y + self.image.height/2
+
+            if(self.state==0):
+                self.Stalk(jogador,janela)
 

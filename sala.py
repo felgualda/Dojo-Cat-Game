@@ -124,8 +124,10 @@ class Sala:
         self.sprite.set_position(self.x, self.y)
 
     def UpdateEntities(self,jogador,janela):
-        for i in range(len(self.inimigos)):
-            self.inimigos[i].Update(jogador,janela)
+        for i in self.inimigos:
+            i.Update(jogador,janela)
+            if(not i.vivo):
+                self.inimigos.remove(i)
 
     def DrawSala(self):
         self.sprite.draw()

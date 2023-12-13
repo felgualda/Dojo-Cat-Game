@@ -6,6 +6,7 @@ from PPlay.collision import *
 from PPlay.keyboard import *
 from PPlay.mouse import *
 from vida import *
+from indicadorDash import *
 import math
 import menu
 import mapgenerator
@@ -49,6 +50,8 @@ def Jogar():
     global velocity_y, velocity_x
     global usandoInvestida, velInvestida, distInvestida, timerDistInvestida
     global cooldownInvestida, cooldownInvestidaTimer
+
+    global attacking
 
     global anguloMouse
     global vet_x, vet_y
@@ -95,7 +98,7 @@ def Jogar():
                 transitioning = True
                 #velocity_y-=dc_speed*janela.delta_time()
             
-            if(key_input.key_pressed('a') and not usandoInvestida):                                      # Tecla A Pressionada
+            if(key_input.key_pressed('a') and not usandoInvestida and not attacking):                                      # Tecla A Pressionada
                 velocity_x = -velMovimento
                 ultimaDir = 'left'
                 transitioning = False
@@ -104,7 +107,7 @@ def Jogar():
                 velocity_x = 0
                 #velocity_x+=dc_speed*janela.delta_time()
 
-            if(key_input.key_pressed('d') and not usandoInvestida):                                     # Tecla D Pressionada
+            if(key_input.key_pressed('d') and not usandoInvestida and not attacking):                                     # Tecla D Pressionada
                 velocity_x = velMovimento
                 ultimaDir = 'right'
                 transitioning = False
@@ -129,8 +132,29 @@ def Jogar():
                     vet_x = 0
                     vet_y = 0
 
-        if(key_input.key_pressed('space') and not usandoInvestida and cooldownInvestidaTimer > cooldownInvestida and not (swapDown or swapLeft or swapRight or swapUp) and pause == 0):
+            # ATAQUE
+            print(jogador.enemiesInRange)
+
+            if(not usandoInvestida and cursor.is_button_pressed(3) and not attacking):
+                attacking = True
+                jogador.attack()
+            if(attacking):
+                velocity_x = 0
+                velocity_y = 0
+
+                if(ultimaDir=='right'):
+                    jogador.setAnim(5)
+                if(ultimaDir=='left'):
+                    jogador.setAnim(6)
+                
+                if(jogador.image.get_curr_frame() == 34 or jogador.image.get_curr_frame() == 25):
+                    attacking = False
+                
+
+        if(key_input.key_pressed('space') and not usandoInvestida and cooldownInvestidaTimer > cooldownInvestida and not (swapDown or swapLeft or swapRight or swapUp) and pause == 0 and not attacking):
             usandoInvestida = True
+            barraInvestida.set_curr_frame(0)
+
         if(usandoInvestida and pause == 0):
             timerDistInvestida += janela.delta_time()
             if(timerDistInvestida <= tempoInvestida):
@@ -140,6 +164,8 @@ def Jogar():
                 cooldownInvestidaTimer = 0
                 usandoInvestida = False
                 timerDistInvestida = 0
+                barraInvestida.stop()
+                barraInvestida.play()
 
 
         if(velocity_x < 10 and velocity_x > -10 and not usandoInvestida):                           # Desacelerar jogador (Zerar a velocidade com valores próximos de 0)
@@ -166,7 +192,7 @@ def Jogar():
         if(velocity_x == -velMovimento):                                                # Se estiver se movendo pra esquerda, estado da animação 0 (Esquerda)
             jogador.setAnim(2)
         
-        if((velocity_y == velMovimento or velocity_y == -velMovimento) and not usandoInvestida):
+        if((velocity_y == velMovimento or velocity_y == -velMovimento) and not usandoInvestida and not attacking):
             if(ultimaDir=='left'):
                 jogador.setAnim(2)
                 
@@ -181,7 +207,7 @@ def Jogar():
                 jogador.setAnim(4)
                 ultimaDir = 'left'
 
-        if(velocity_x == 0 and velocity_y == 0):
+        if(velocity_x == 0 and velocity_y == 0 and not attacking):
             if(ultimaDir=='left'):
                 jogador.image.set_sequence(8,8,True)
             if(ultimaDir=='right'):
@@ -271,6 +297,8 @@ def Jogar():
             s.DrawFrenteJogador()
             if(active_sala[0] == s.adress[0] and active_sala[1] == s.adress[1] and not swapDown and not swapLeft and not swapRight and not swapUp and pause == 0):
                 s.UpdateEntities(jogador,janela)
+                for i in range(len(s.inimigos)):
+                    jogador.CheckHitbox(s.inimigos[i])
 
         if(not swapLeft and not swapRight and not swapDown and not swapUp and podeMover and pause ==0):
             jogador.move_x(velocity_x*janela.delta_time())
@@ -283,6 +311,7 @@ def Jogar():
                 ultimasCoords.pop(0)
 
         drawCoracoes()
+        drawBarra()
         # TELA DE MORTE:
 
         if(key_input.key_pressed("p")):
@@ -338,5 +367,5 @@ def Jogar():
         crosshair.draw()
         
         if(pause==0):
-            jogador.update()
+            jogador.update(ultimaDir)
         janela.update()

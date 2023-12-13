@@ -69,7 +69,11 @@ dc_speed = 1200
 # VIDA DO JOGADOR
 vida_max = 4
 vida_atual = vida_max
+
+# UI
 pos_barravida = (15,h - 50)
 offset_barravida = 5
+
+pos_barrainvestida = (w-300,h-50)
 
 v_str = ''
