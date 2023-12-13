@@ -33,6 +33,7 @@ def Reset():
     todos_sprites = mapgenerator.todasSalas
 
     # POSICIONA JOGADOR NO INICIO
+    ultimasCoords.clear()
     jogador.set_position(w/2-40.5,h/2-40.5)
 
     # SALA ATIVA É A INICIAL
@@ -144,7 +145,7 @@ def Jogar():
 
             if(not usandoInvestida and cursor.is_button_pressed(3) and not attacking):
                 attacking = True
-                jogador.attack(ultimaDir)
+                jogador.attack()
             if(attacking):
                 velocity_x = 0
                 velocity_y = 0
