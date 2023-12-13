@@ -70,8 +70,11 @@ def Jogar():
 
     global v_str
 
-    Reset()
+    global vida_max
+    global vida_atual
+    vidas = vida_atual
 
+    Reset()
 
     cursor.hide()
     janela.set_title('Dojo Cat - Build Incompleta')
@@ -309,6 +312,14 @@ def Jogar():
             ultimasCoords.append((jogador.x,jogador.y))
             if(len(ultimasCoords) > 2):
                 ultimasCoords.pop(0)
+
+        #if(condição and pause == 0):
+        #    levarDano()
+        #    vidas -= 1
+        #if(condição and pause == 0):
+        #    if vidas < vida_max:
+        #        ganharVida()
+        #        vidas +=1
 
         drawCoracoes()
         drawBarra()

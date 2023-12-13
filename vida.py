@@ -1,5 +1,7 @@
 from globalVar import *
 from PPlay.sprite import *
+import menu
+import game
 
 vetCoracoes = [Sprite('assets/hearts.png',2) for x in range(vida_max)]
 tam_coracao_x = vetCoracoes[0].width
@@ -12,4 +14,20 @@ def drawCoracoes():
         vetCoracoes[i].draw()
 
 def levarDano():
-    pass
+    global vida_atual
+    vida_atual -= 1
+    atualizarCoracoes()
+
+def ganharVida():
+    global vida_atual
+    vida_atual += 1
+    atualizarCoracoes()
+
+
+def atualizarCoracoes():
+    global vida_atual
+    for i in range(vida_max):
+        if i < vida_atual:
+            vetCoracoes[i].set_curr_frame(0)
+        else:
+            vetCoracoes[i].set_curr_frame(1)
