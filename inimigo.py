@@ -1,5 +1,6 @@
 from PPlay.sprite import *
 from PPlay.window import *
+from particleHandler import *
 import math
 
 class Inimigo:
@@ -50,6 +51,7 @@ class Inimigo:
         self.image.draw()
 
     def LevarDano(self,dano):
+        FX_blood(self.centro_x,self.centro_y)
         self.vida -= dano
         self.levouDano = True
 

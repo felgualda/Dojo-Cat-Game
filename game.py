@@ -7,6 +7,7 @@ from PPlay.keyboard import *
 from PPlay.mouse import *
 from vida import *
 from indicadorDash import *
+from particleHandler import *
 import math
 import menu
 import mapgenerator
@@ -36,6 +37,9 @@ def Reset():
 
     # SALA ATIVA É A INICIAL
     active_sala = [0,0]
+
+    # REINICIA UI
+    barraInvestida.set_curr_frame(35)
 
 def Jogar():
     # VARIÁVEIS GLOBAIS
@@ -140,7 +144,7 @@ def Jogar():
 
             if(not usandoInvestida and cursor.is_button_pressed(3) and not attacking):
                 attacking = True
-                jogador.attack()
+                jogador.attack(ultimaDir)
             if(attacking):
                 velocity_x = 0
                 velocity_y = 0
@@ -377,6 +381,8 @@ def Jogar():
         crosshair.set_position(cursor_x-crosshair.width/2,cursor_y-crosshair.height/2)
         crosshair.draw()
         
+        UpdateParticles()
+
         if(pause==0):
             jogador.update(ultimaDir)
         janela.update()
