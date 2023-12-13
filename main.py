@@ -14,4 +14,5 @@ janela.set_background_color((22,22,22))
 
 cursor.hide()
 
+
 menu.MenuPrincipal()

@@ -15,6 +15,10 @@ class Inimigo:
         
         self.var = var
         self.image = Sprite('assets/inimigos/ninja.png')
+        
+        self.hitbox = Sprite('assets\inimigos\enemy-hitbox.png')
+        self.hitbox.set_position(self.x+42,self.y-18)
+
 
         # Definição de sprite conforme a variação
         if(var == 1):
@@ -49,6 +53,7 @@ class Inimigo:
 
     def Draw(self):
         self.image.draw()
+        self.hitbox.draw()
 
     def LevarDano(self,dano):
         FX_blood(self.centro_x,self.centro_y)
@@ -74,6 +79,23 @@ class Inimigo:
         if(not self.levouDano):
             self.move_x(self.velx)
             self.move_y(self.vely)
+        
+    def Attack(self,target):
+        if(self.velx > 0):
+            if self.image.get_curr_frame() < 16 or self.image.get_curr_frame() > 19:
+                self.image.set_sequence(16,19,True)
+        if(self.velx < 0):
+            if self.image.get_curr_frame() < 19 or self.image.get_curr_frame() > 22:
+                self.image.set_sequence(19,22,True)
+        
+        if(self.image.get_curr_frame()==17 or self.image.get_curr_frame()==20):
+            #Frame de ataque
+            if(self.hitbox.collided(target.colisao)):
+                if(target.tag=='player'):
+                    pass
+
+        if(self.image.get_curr_frame()==18 or self.image.get_curr_frame()==21):
+            self.state=0
 
 
     def Update(self,jogador,janela):
@@ -88,10 +110,12 @@ class Inimigo:
                 self.levouDano = False
                 self.tempoSpriteTimer = 0
 
-            if(self.velx > 0 and not self.levouDano):
+            if(self.velx > 0 and not self.levouDano and self.state==0):
+                self.hitbox.set_position(self.x+42,self.y+18)
                 if self.image.get_curr_frame() < 1 or self.image.get_curr_frame() > 7:
                     self.image.set_sequence(1,7,True)
-            if(self.velx < 0 and not self.levouDano):
+            if(self.velx < 0 and not self.levouDano and self.state==0):
+                self.hitbox.set_position(self.x-6,self.y+18)
                 if self.image.get_curr_frame() < 8 or self.image.get_curr_frame() > 14:
                     self.image.set_sequence(8,14,True)
 
@@ -103,4 +127,10 @@ class Inimigo:
 
             if(self.state==0):
                 self.Stalk(jogador,janela)
+
+            if(self.state==1):
+                self.Attack(jogador)
+
+            if(self.hitbox.collided(jogador.colisao)):
+                self.state = 1
 

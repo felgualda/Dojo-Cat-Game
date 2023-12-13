@@ -6,6 +6,8 @@ class Jogador:
         self.x = pos[0]
         self.y = pos[1]
 
+        self.tag = 'player'
+        
         self.image = Sprite('assets/gato_animacao-Sheet.png',36)
 
         self.colisao = Sprite('assets/colisao_player.png')

@@ -141,7 +141,7 @@ def Jogar():
                     vet_y = 0
 
             # ATAQUE
-            print(jogador.enemiesInRange)
+            #print(jogador.enemiesInRange)
 
             if(not usandoInvestida and cursor.is_button_pressed(3) and not attacking):
                 attacking = True
