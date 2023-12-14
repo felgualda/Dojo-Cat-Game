@@ -7,6 +7,7 @@ from PPlay.keyboard import *
 from PPlay.mouse import *
 import mapgenerator
 from jogadorClass import *
+from soundmanager import *
 
 # JANELA E DEFINIÇOES
 w,h = 1200,675
@@ -36,6 +37,8 @@ usandoInvestida = False
 velInvestida = 800
 distInvestida = 230
 timerDistInvestida = 0
+inimigosDanificados = []
+interactablesAfetados = []
 
 cooldownInvestida = 2
 cooldownInvestidaTimer = 2
@@ -63,17 +66,14 @@ swapUp = False
 swapDown = False
 timer = 0
 
+soundManager = AudioManager()
+
 # DESACELERAÇÃO
 dc_speed = 1200
-
-# VIDA DO JOGADOR
-vida_max = 4
-vida_atual = vida_max
-
 # UI
-pos_barravida = (15,h - 50)
-offset_barravida = 5
-
 pos_barrainvestida = (w-300,h-50)
+
+# SOM
+timersoma = 0
 
 v_str = ''

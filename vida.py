@@ -8,6 +8,9 @@ class Vida():
         self.pos_barravida = (15,675 - 50)
         self.offset_barravida = 5
 
+        self.invencivel = False
+        self.levouDano = False
+        self.tempoInvencivel = 1
 
         self.vetCoracoes = [Sprite('assets/hearts.png',2) for x in range(self.vida_max)]
         self.tam_coracao_x = self.vetCoracoes[0].width
@@ -20,8 +23,10 @@ class Vida():
             self.vetCoracoes[i].draw()
 
     def levarDano(self):
-        self.vida_atual -= 1
-        self.atualizarCoracoes()
+        if(not self.invencivel):
+            self.vida_atual -= 1
+            self.atualizarCoracoes()
+            self.levouDano = True
 
     def ganharVida(self):
         self.vida_atual += 1

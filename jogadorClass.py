@@ -1,6 +1,7 @@
 from PPlay.sprite import *
 from PPlay.animation import *
 from vida import *
+from pygame import mixer
 
 class Jogador:
     def __init__(self,pos):
@@ -22,9 +23,14 @@ class Jogador:
         self.image.set_position(self.x-self.image.width/2,self.y-self.image.height/2)
 
         self.enemiesInRange = []
+        self.interactablesInRange = []
 
         self.width = self.image.width
         self.height = self.image.height
+
+        self.toggle = False# Toggle no draw quando jogador está invencivel
+        self.invencivelTimer = 0
+        self.invencivelTimerSec = 0
 
     def LevarDano(self):
         self.vida.levarDano()
@@ -38,12 +44,27 @@ class Jogador:
                 self.enemiesInRange.append(other)
             if(not self.hitbox.collided(other.image) and other in self.enemiesInRange):
                 self.enemiesInRange.remove(other)
+        if(other.tag=='crate'):
+            if(self.hitbox.collided(other.image) and not other in self.interactablesInRange):
+                self.interactablesInRange.append(other)
+            if(not self.hitbox.collided(other.image) and other in self.interactablesInRange):
+                self.interactablesInRange.remove(other)
 
-    def attack(self):
+    def attack(self,soundmanager):
+        if len(self.enemiesInRange) != 0:
+            soundmanager.som1()
+        if len(self.enemiesInRange) == 0:
+            soundmanager.som2()
+        
         for e in self.enemiesInRange:
             e.LevarDano(20)
             if(not e.vivo):
                 self.enemiesInRange.remove(e)
+
+        for e in self.interactablesInRange:
+            e.Break()
+            if(e.broken):
+                self.interactablesInRange.remove(e)
     
     def set_position(self,x,y):
         self.x = x
@@ -51,7 +72,11 @@ class Jogador:
         self.image.set_position(self.x,self.y)
 
     def draw(self):
-        self.image.draw()
+        if(self.vida.levouDano):
+            if(self.toggle):
+                self.image.draw()
+        else:
+            self.image.draw()
         #self.colisao.draw()
         #self.hitbox.draw()
 
@@ -63,7 +88,7 @@ class Jogador:
         self.y += speed
         self.image.set_position(self.x, self.y)
 
-    def update(self, ultimaDir):
+    def update(self, ultimaDir,janela):
         #print(str(self.image.get_initial_frame()) + ' ' + str(self.image.get_final_frame()) + ' ' + str(self.image.get_curr_frame()))
         self.image.update()
         self.colisao.set_position(self.x+27,self.y+3)
@@ -72,6 +97,20 @@ class Jogador:
             self.hitbox.set_position(self.x+57,self.y-18)
         if(ultimaDir=='left'):
             self.hitbox.set_position(self.x+60-self.hitbox.width,self.y-18)
+
+        if(self.vida.levouDano):
+            self.vida.invencivel = True
+            self.invencivelTimer+=janela.delta_time()
+            self.invencivelTimerSec+=janela.delta_time()
+            if(self.invencivelTimerSec >= 0.1):
+                self.toggle = not self.toggle
+                self.invencivelTimerSec = 0
+            if(self.invencivelTimer >= self.vida.tempoInvencivel):
+                self.vida.levouDano = False
+                self.vida.invencivel = False
+                self.toggle = False
+                self.invencivelTimer = 0
+                self.invencivelTimerSec = 0
         
 
     def setAnim(self, state):

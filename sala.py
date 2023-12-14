@@ -1,5 +1,7 @@
 from PPlay.sprite import *
 from inimigo import *
+from box import *
+from pygame import mixer
 
 class Sala:
     
@@ -20,7 +22,7 @@ class Sala:
 
         # PORTAS
         self.portasAbertas = True
-        self.abrindoPortas = True
+        self.abrindoPortas = False
 
         self.passagem[0].set_position(528+self.x,0+self.y)
         self.passagem[1].set_position(528+self.x,573+self.y)
@@ -28,16 +30,16 @@ class Sala:
         self.passagem[3].set_position(self.x,258+self.y)
 
         self.portas[0].set_position(537+self.x,81+self.y)
-        self.portas[0].set_sequence_time(0,21,30,True)
+        self.portas[0].set_sequence_time(0,21,80,True)
         
         self.portas[1].set_position(537+self.x,594+self.y)
-        self.portas[1].set_sequence_time(0,21,30,True)
+        self.portas[1].set_sequence_time(0,21,80,True)
 
         self.portas[2].set_position(1062+self.x,267+self.y)
-        self.portas[2].set_sequence_time(0,21,30,True)
+        self.portas[2].set_sequence_time(0,21,80,True)
 
         self.portas[3].set_position(123+self.x,267+self.y)
-        self.portas[3].set_sequence_time(0,21,30,True)
+        self.portas[3].set_sequence_time(0,21,80,True)
 
         self.portaDireita = False
         self.portaEsquerda = False
@@ -59,9 +61,14 @@ class Sala:
 
         # INIMIGOS
         self.inimigos = []
+        
+        # MISC
+        self.interactables = []
+
+        # VARIAÇÃO DE SALA
         if(self.var == 1):
             self.inimigos = [Inimigo((self.x + 1200/2, self.y + 675/2),1)]
-        
+            self.interactables = [Box(self.x + 170,self.y+178),Box(self.x+908,self.y+511)]
 
         # RENDER DEPOIS
         self.renderFrente = [Sprite('assets/sala/left_passage_southwall.png'), Sprite('assets/sala/right_passage_southwall.png'), Sprite('assets/sala/room_southwall.png'),Sprite('assets/sala/botoom_wal_Nodoorl.png'),Sprite('assets/sala/top_frame.png')]
@@ -115,7 +122,9 @@ class Sala:
             c.set_position(0+self.x,279+self.y)
             self.col.append(c)
 
-    def AbrirPortas(self):
+    def AbrirPortas(self,soundmanager):
+        if(not self.abrindoPortas):
+            soundmanager.som4()
         self.abrindoPortas = True
         for p in self.portas:
             if p.get_curr_frame() <= 0 or p.get_curr_frame() >= 10:
@@ -124,7 +133,9 @@ class Sala:
                 self.portasAbertas=True
                 self.abrindoPortas=False
 
-    def FecharPortas(self):
+    def FecharPortas(self,soundmanager):
+        if(not self.abrindoPortas):
+            soundmanager.som5()
         self.abrindoPortas = True
         for p in self.portas:
             if p.get_curr_frame() <= 11 or p.get_curr_frame() >= 21:
@@ -147,6 +158,9 @@ class Sala:
         for i in self.inimigos:
             i.move_x(speed)
 
+        for i in self.interactables:
+            i.move_x(speed)
+
         self.sprite.set_position(self.x, self.y)
 
     def Mover_Y(self, speed):
@@ -163,9 +177,16 @@ class Sala:
         for i in self.inimigos:
             i.move_y(speed)
 
+        for i in self.interactables:
+            i.move_y(speed)
+
         self.sprite.set_position(self.x, self.y)
 
-    def UpdateEntities(self,jogador,janela):
+    def UpdateEntities(self,jogador,janela,soundmanager):
+        for i in self.interactables:
+            if(i.broken):
+                self.interactables.remove(i)
+
         for i in self.inimigos:
             i.Update(jogador,janela)
             if(not i.vivo):
@@ -174,10 +195,10 @@ class Sala:
             self.cleared=True
 
         if(not self.cleared and self.portasAbertas):
-            self.FecharPortas()
+            self.FecharPortas(soundmanager)
         
         if(self.cleared and not self.portasAbertas):
-            self.AbrirPortas()
+            self.AbrirPortas(soundmanager)
 
         if(not self.abrindoPortas and self.portasAbertas):
             for p in self.portas:
@@ -225,9 +246,12 @@ class Sala:
         if self.portaEsquerda:
             self.passagem[3].draw()
             self.portas[3].draw()
+        
+        for b in self.interactables:
+            b.Draw()
 
-        for p in self.portas:
-            p.update()
+        for i in range(len(self.portas)):
+            self.portas[i].update()
 
     def DrawFrenteJogador(self):
         if self.portaDireita:

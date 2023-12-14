@@ -60,9 +60,10 @@ class Inimigo:
         #self.hitbox.draw()
 
     def LevarDano(self,dano):
-        FX_blood(self.centro_x,self.centro_y)
-        self.vida -= dano
-        self.levouDano = True
+        if(self.vivo):
+            FX_blood(self.centro_x,self.centro_y)
+            self.vida -= dano
+            self.levouDano = True
 
         if(self.vida <= 0):
             self.Morrer()

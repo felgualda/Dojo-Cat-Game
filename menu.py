@@ -5,6 +5,7 @@ from PPlay.sprite import *
 from opcoes import *
 from globalVar import *
 import game
+from pygame import mixer
 
 # DEFINIÇÃO DA JANELA:
 fundo = GameImage('assets/f.png')
@@ -24,6 +25,13 @@ def MenuPrincipal():
 
     janela.set_title('Dojo Cat | Menu Principal')
     timer = 0
+
+    musicalobby = mixer
+    musicalobby.init()
+    musicalobby.music.load('audio/musicalobby.mp3')
+    musicalobby.music.set_volume(0.05)
+    musicalobby.music.play(-1)
+
     while True:
         timer += janela.delta_time()
     # Botão "jogar" escurecer quando o mouse estiver em cima dele:
@@ -63,6 +71,7 @@ def MenuPrincipal():
         
         # Botão "jogar":
         elif cursor.is_over_area((jogar.x , jogar.y),(jogar.x + jogar.width , jogar.y + jogar.height)) and cursor.is_button_pressed(1) and timer > 0.5:
+            musicalobby.music.stop()
             # Caso o cursor esteja em cima do botão Jogar,
             # e o botão essquerdo do mouse for apertado --> Chamar todo o "jogar.py".
             x = game.Jogar()

@@ -11,6 +11,7 @@ from particleHandler import *
 import math
 import menu
 import mapgenerator
+from pygame import mixer
 
 from globalVar import *
 
@@ -19,7 +20,11 @@ def Reset():
     global mapa
     global active_sala
     global todos_sprites
+    global inimigosDanificados
+    global interactablesAfetados
+    global timersoma
 
+    timersoma = 0
     # GERA O MAPA
     for s in todos_sprites:
         s.Delete()
@@ -36,15 +41,27 @@ def Reset():
     ultimasCoords.clear()
     jogador.set_position(w/2-40.5,h/2-40.5)
 
+    inimigosDanificados.clear()
+    interactablesAfetados.clear()
+
     # VIDAS
     jogador.vida.vida_atual = jogador.vida.vida_max
     jogador.vida.atualizarCoracoes()
+    jogador.vida.invencivel = False
+    jogador.vida.levouDano = False
+    jogador.enemiesInRange.clear()
 
     # SALA ATIVA É A INICIAL
     active_sala = [0,0]
 
     # REINICIA UI
     barraInvestida.set_curr_frame(35)
+    bloodsplats.clear()
+
+def somandar():
+    somandada = pygame.mixer.Sound('audio/andada.mp3')
+    somandada.set_volume(0.2)
+    somandada.play()
 
 def Jogar():
     # VARIÁVEIS GLOBAIS
@@ -59,6 +76,8 @@ def Jogar():
     global velocity_y, velocity_x
     global usandoInvestida, velInvestida, distInvestida, timerDistInvestida
     global cooldownInvestida, cooldownInvestidaTimer
+    global inimigosDanificados
+    global interactablesAfetados
 
     global attacking
 
@@ -66,6 +85,8 @@ def Jogar():
     global vet_x, vet_y
     global contadorQuadros
     global ultimasCoords
+
+    global soundManager
 
     global mapa
 
@@ -83,19 +104,27 @@ def Jogar():
     global vida_atual
     global vetCoracoes
 
+    global timersoma
+
     Reset()
 
     cursor.hide()
     janela.set_title('Dojo Cat - Build Incompleta')
     pause = 0
+
     while True:
         jogador_centro_x = jogador.x + jogador.width / 2
         jogador_centro_y = jogador.y + jogador.height / 2
         cursor_x, cursor_y = cursor.get_position()
 
+        timersoma += janela.delta_time()
+
         # MOVIMENTO DO JOGADOR
         if(pause == 0):
             if(key_input.key_pressed('w') and not usandoInvestida):                                      # Tecla W Pressionada
+                if timersoma > 0.5:
+                    timersoma = 0
+                    somandar()
                 velocity_y = -velMovimento
             elif(velocity_y < 0 and not usandoInvestida):
                 transitioning = True
@@ -103,6 +132,9 @@ def Jogar():
                 #velocity_y+=dc_speed*janela.delta_time()
 
             if(key_input.key_pressed('s') and not usandoInvestida):                                      # Tecla S Pressionada
+                if timersoma > 0.5:
+                    timersoma = 0
+                    somandar()
                 velocity_y = velMovimento
             elif(velocity_y > 0 and not usandoInvestida):
                 velocity_y = 0
@@ -110,6 +142,9 @@ def Jogar():
                 #velocity_y-=dc_speed*janela.delta_time()
             
             if(key_input.key_pressed('a') and not usandoInvestida and not attacking):                                      # Tecla A Pressionada
+                if timersoma > 0.5:
+                    timersoma = 0
+                    somandar()
                 velocity_x = -velMovimento
                 ultimaDir = 'left'
                 transitioning = False
@@ -119,6 +154,9 @@ def Jogar():
                 #velocity_x+=dc_speed*janela.delta_time()
 
             if(key_input.key_pressed('d') and not usandoInvestida and not attacking):                                     # Tecla D Pressionada
+                if timersoma > 0.5:
+                    timersoma = 0
+                    somandar()
                 velocity_x = velMovimento
                 ultimaDir = 'right'
                 transitioning = False
@@ -148,7 +186,7 @@ def Jogar():
 
             if(not usandoInvestida and cursor.is_button_pressed(3) and not attacking):
                 attacking = True
-                jogador.attack()
+                jogador.attack(soundManager)
             if(attacking):
                 velocity_x = 0
                 velocity_y = 0
@@ -167,11 +205,28 @@ def Jogar():
             barraInvestida.set_curr_frame(0)
 
         if(usandoInvestida and pause == 0):
+            # DAR DANO DE CONTATO
+            for s in todos_sprites:
+                if(active_sala[0] == s.adress[0] and active_sala[1] == s.adress[1] and not swapDown and not swapLeft and not swapRight and not swapUp and pause == 0):
+                    for e in s.inimigos:
+                        if(jogador.collided(e.image) and not e in inimigosDanificados):
+                            inimigosDanificados.append(e)
+                            e.LevarDano(40)
+                    for e in s.interactables:
+                        if(jogador.collided(e.image) and not e in interactablesAfetados):
+                            inimigosDanificados.append(e)
+                            e.Break()
+
+
+            jogador.vida.invencivel = True
             timerDistInvestida += janela.delta_time()
             if(timerDistInvestida <= tempoInvestida):
                 velocity_x = velInvestida * vet_x
                 velocity_y = velInvestida * vet_y
             else:
+                inimigosDanificados.clear()
+                interactablesAfetados.clear()
+                jogador.vida.invencivel = False
                 cooldownInvestidaTimer = 0
                 usandoInvestida = False
                 timerDistInvestida = 0
@@ -328,9 +383,11 @@ def Jogar():
         for s in todos_sprites:
             s.DrawFrenteJogador()
             if(active_sala[0] == s.adress[0] and active_sala[1] == s.adress[1] and not swapDown and not swapLeft and not swapRight and not swapUp and pause == 0):
-                s.UpdateEntities(jogador,janela)
+                s.UpdateEntities(jogador,janela,soundManager)
                 for i in range(len(s.inimigos)):
                     jogador.CheckHitbox(s.inimigos[i])
+                for i in range(len(s.interactables)):
+                    jogador.CheckHitbox(s.interactables[i])
 
         if(not swapLeft and not swapRight and not swapDown and not swapUp and podeMover and pause ==0):
             jogador.move_x(velocity_x*janela.delta_time())
@@ -341,14 +398,6 @@ def Jogar():
             ultimasCoords.append((jogador.x,jogador.y))
             if(len(ultimasCoords) > 2):
                 ultimasCoords.pop(0)
-
-        #if(condição and pause == 0):
-        #    levarDano()
-        #    vidas -= 1
-        #if(condição and pause == 0):
-        #    if vidas < vida_max:
-        #        ganharVida()
-        #        vidas +=1
 
         jogador.vida.drawCoracoes()
         drawBarra()
@@ -407,5 +456,5 @@ def Jogar():
         UpdateParticles()
 
         if(pause==0):
-            jogador.update(ultimaDir)
+            jogador.update(ultimaDir,janela)
         janela.update()
