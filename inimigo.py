@@ -2,6 +2,7 @@ from PPlay.sprite import *
 from PPlay.window import *
 from particleHandler import *
 import math
+import random
 
 class Inimigo:
     def __init__(self,pos,var):
@@ -19,7 +20,6 @@ class Inimigo:
         
         self.hitbox = Sprite('assets\inimigos\enemy-hitbox.png')
         self.hitbox.set_position(self.x+42,self.y-18)
-
 
         # Definição de sprite conforme a variação
         if(var == 1):
@@ -57,7 +57,7 @@ class Inimigo:
             self.attackCooldown = 0.8
         if(self.var==2):
             self.attackCooldown = 2
-        self.attackCooldownTimer = 0
+        self.attackCooldownTimer = random.uniform(0,self.attackCooldown)
 
         self.distanciaMira = 1000
         self.mirando = False

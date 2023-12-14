@@ -44,6 +44,11 @@ class Jogador:
                 self.enemiesInRange.append(other)
             if(not self.hitbox.collided(other.image) and other in self.enemiesInRange):
                 self.enemiesInRange.remove(other)
+        if(other.tag=='boss'):
+            if(self.hitbox.collided(other.bossImage) and not other in self.enemiesInRange):
+                self.enemiesInRange.append(other)
+            if(not self.hitbox.collided(other.bossImage) and other in self.enemiesInRange):
+                self.enemiesInRange.remove(other)
         if(other.tag=='crate'):
             if(self.hitbox.collided(other.image) and not other in self.interactablesInRange):
                 self.interactablesInRange.append(other)
@@ -57,7 +62,7 @@ class Jogador:
             soundmanager.som2()
         
         for e in self.enemiesInRange:
-            e.LevarDano(20)
+            e.LevarDano(100)
             if(not e.vivo):
                 self.enemiesInRange.remove(e)
 

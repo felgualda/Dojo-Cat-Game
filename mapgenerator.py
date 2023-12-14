@@ -84,7 +84,7 @@ def SetSalas(a):
                 if a[i][j] == 1:
                     todasSalas.append(Sala((j-spawn[1],i-spawn[0]),1))
                 if a[i][j] == 3:
-                    todasSalas.append(Sala((j-spawn[1],i-spawn[0]),0))
+                    todasSalas.append(Sala((j-spawn[1],i-spawn[0]),3))
     
      for i in todasSalas:
           lista_coords.append(i.adress)

@@ -3,6 +3,7 @@ from inimigo import *
 from box import *
 from pygame import mixer
 from projectile import *
+from bossbattle import *
 
 class Sala:
     
@@ -71,6 +72,10 @@ class Sala:
         if(self.var == 1):
             self.inimigos = [Inimigo((self.x + 1200/2, self.y + 675/2),2),Inimigo((self.x + 1200/2, self.y + 200),2),Inimigo((self.x + 350, self.y + 675/2),1),Inimigo((self.x + 850, self.y + 675/2),1)]
             self.interactables = [Box(self.x + 170,self.y+178),Box(self.x+908,self.y+511)]
+
+        # BOSS
+        if(self.var==3):
+            self.bossBattle = BossBattle(self.x,self.y)
 
         # RENDER DEPOIS
         self.renderFrente = [Sprite('assets/sala/left_passage_southwall.png'), Sprite('assets/sala/right_passage_southwall.png'), Sprite('assets/sala/room_southwall.png'),Sprite('assets/sala/botoom_wal_Nodoorl.png'),Sprite('assets/sala/top_frame.png')]
@@ -163,6 +168,9 @@ class Sala:
         for i in self.interactables:
             i.move_x(speed)
 
+        if(self.var==3):
+            self.bossBattle.move_x(speed)
+
         self.sprite.set_position(self.x, self.y)
 
     def Mover_Y(self, speed):
@@ -181,10 +189,16 @@ class Sala:
 
         for i in self.interactables:
             i.move_y(speed)
+        
+        if(self.var==3):
+            self.bossBattle.move_y(speed)
 
         self.sprite.set_position(self.x, self.y)
 
     def UpdateEntities(self,jogador,janela,soundmanager):
+        if(self.var==3):
+            self.bossBattle.Update(jogador,janela)
+
         for i in self.projectiles:
             if(not i.existe):
                 self.projectiles.remove(i)
@@ -269,7 +283,13 @@ class Sala:
         for i in range(len(self.portas)):
             self.portas[i].update()
 
+        if(self.var==3):
+            self.bossBattle.Draw()
+
     def DrawFrenteJogador(self):
+        for i in self.inimigos:
+            i.Draw()
+
         if self.portaDireita:
             self.renderFrente[1].draw()
 
@@ -283,9 +303,6 @@ class Sala:
         
         if self.portaCima:
             self.renderFrente[4].draw()
-
-        for i in self.inimigos:
-            i.Draw()
 
     def Delete(self):
         # DELETA A SALA E TUDO ASSOCIADO A ELA

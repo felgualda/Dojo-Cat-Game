@@ -260,8 +260,6 @@ def Jogar():
                     except:
                         pass
 
-        print(jogador.enemiesInRange)
-
         # SPRITE DO JOGADOR
         if(velocity_x == velMovimento and not swapDown and not swapLeft and not swapUp and not swapRight):                                                  # Se estiver se movendo pra direita, estado da animação 0 (Direita)
             jogador.setAnim(1)
@@ -390,6 +388,8 @@ def Jogar():
                     jogador.CheckHitbox(s.inimigos[i])
                 for i in range(len(s.interactables)):
                     jogador.CheckHitbox(s.interactables[i])
+                if(s.var==3):
+                    jogador.CheckHitbox(s.bossBattle)
 
         if(not swapLeft and not swapRight and not swapDown and not swapUp and podeMover and pause ==0):
             jogador.move_x(velocity_x*janela.delta_time())
