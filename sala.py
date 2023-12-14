@@ -3,7 +3,7 @@ from inimigo import *
 
 class Sala:
     
-    def __init__(self, adress, var, cleared):
+    def __init__(self, adress, var):
         
         self.adress = adress
 
@@ -11,16 +11,33 @@ class Sala:
         self.y = self.adress[1] * 675
 
         self.var = var
-        self.cleared = cleared
+        self.cleared = False
 
         self.sprite = Sprite('assets/sala/sala.png')
         self.sprite.set_position(self.x,self.y)
-        self.portas = [Sprite('assets/sala/passages/TOP_PASSAGE.png'),Sprite('assets/sala/passages/BOTTOM_PASSAGE.png'),Sprite('assets/sala/passages/RIGHT_PASSAGE.png'),Sprite('assets/sala/passages/LEFT_PASSAGE.png')]
+        self.passagem = [Sprite('assets/sala/passages/TOP_PASSAGE.png'),Sprite('assets/sala/passages/BOTTOM_PASSAGE.png'),Sprite('assets/sala/passages/RIGHT_PASSAGE.png'),Sprite('assets/sala/passages/LEFT_PASSAGE.png')]
+        self.portas = [Sprite('assets/portas/porta-cima_sheet.png',22),Sprite('assets/portas/porta-baixo_Sheet.png',22),Sprite('assets/portas/porta-direita_sheet.png',22),Sprite('assets/portas/porta-esquerda_sheet.png',22)]
+
         # PORTAS
-        self.portas[0].set_position(528+self.x,0+self.y)
-        self.portas[1].set_position(528+self.x,573+self.y)
-        self.portas[2].set_position(1038+self.x,258+self.y)
-        self.portas[3].set_position(self.x,258+self.y)
+        self.portasAbertas = True
+        self.abrindoPortas = True
+
+        self.passagem[0].set_position(528+self.x,0+self.y)
+        self.passagem[1].set_position(528+self.x,573+self.y)
+        self.passagem[2].set_position(1038+self.x,258+self.y)
+        self.passagem[3].set_position(self.x,258+self.y)
+
+        self.portas[0].set_position(537+self.x,81+self.y)
+        self.portas[0].set_sequence_time(0,21,30,True)
+        
+        self.portas[1].set_position(537+self.x,594+self.y)
+        self.portas[1].set_sequence_time(0,21,30,True)
+
+        self.portas[2].set_position(1062+self.x,267+self.y)
+        self.portas[2].set_sequence_time(0,21,30,True)
+
+        self.portas[3].set_position(123+self.x,267+self.y)
+        self.portas[3].set_sequence_time(0,21,30,True)
 
         self.portaDireita = False
         self.portaEsquerda = False
@@ -28,6 +45,7 @@ class Sala:
         self.portaBaixo = False
 
         # COLISÃO
+        self.colPortas = []
         self.col = []
         for i in range(8):
             if i < 2:
@@ -64,6 +82,9 @@ class Sala:
         self.col[6].set_position(138+self.x,633+self.y)
         self.col[7].set_position(663+self.x,633+self.y)
 
+        for p in self.portas:
+            p.set_sequence(20,20,True)
+
     def SetPortas(self, l):
         if ((self.adress[0],self.adress[1]+1) in l):
             #Tem sala em baixo
@@ -94,12 +115,31 @@ class Sala:
             c.set_position(0+self.x,279+self.y)
             self.col.append(c)
 
+    def AbrirPortas(self):
+        self.abrindoPortas = True
+        for p in self.portas:
+            if p.get_curr_frame() <= 0 or p.get_curr_frame() >= 10:
+                p.set_sequence(0,10,True)
+            if(p.get_curr_frame()==9):
+                self.portasAbertas=True
+                self.abrindoPortas=False
+
+    def FecharPortas(self):
+        self.abrindoPortas = True
+        for p in self.portas:
+            if p.get_curr_frame() <= 11 or p.get_curr_frame() >= 21:
+                p.set_sequence(11,21,True)
+            if(p.get_curr_frame()==20):
+                self.portasAbertas=False
+                self.abrindoPortas=False
 
     def Mover_X(self, speed):
         self.x += speed
         for i in self.renderFrente:
             i.x += speed
         for i in self.col:
+            i.x += speed
+        for i in self.passagem:
             i.x += speed
         for i in self.portas:
             i.x += speed
@@ -115,6 +155,8 @@ class Sala:
             i.y += speed
         for i in self.col:
             i.y += speed
+        for i in self.passagem:
+            i.y += speed
         for i in self.portas:
             i.y += speed
 
@@ -128,19 +170,64 @@ class Sala:
             i.Update(jogador,janela)
             if(not i.vivo):
                 self.inimigos.remove(i)
+        if(len(self.inimigos)<=0):
+            self.cleared=True
 
+        if(not self.cleared and self.portasAbertas):
+            self.FecharPortas()
+        
+        if(self.cleared and not self.portasAbertas):
+            self.AbrirPortas()
+
+        if(not self.abrindoPortas and self.portasAbertas):
+            for p in self.portas:
+                if p.get_curr_frame() != 21:
+                    p.set_sequence(21,21,True)
+
+        if(not self.abrindoPortas and not self.portasAbertas):
+            for p in self.portas:
+                if p.get_curr_frame() !=20:
+                    p.set_sequence(20,20,True)
+            
+        if(not self.cleared):
+            cp1 = Sprite('assets/portas/bottom_door_placeholder.png')
+            cp1.set_position(555+self.x,633+self.y)
+            
+
+            cp2 = Sprite('assets/portas/top_door_placeholder.png')
+            cp2.set_position(555+self.x,0+self.y)
+
+            cp3 = Sprite('assets/portas/side_door_placeholder.png')
+            cp3.set_position(1062+self.x,279+self.y)
+
+            cp4 = Sprite('assets/portas/side_door_placeholder.png')
+            cp4.set_position(0+self.x,279+self.y)
+            self.colPortas = [cp1,cp2,cp3,cp4]
+        if(self.cleared):
+            self.colPortas.clear()
+            
+
+        # Coloca portas na lista de colisão caso cleared seja falso
+        
     def DrawSala(self):
         self.sprite.draw()
 
         #Desenhar portas caso existam salas adjascentes correspondentes
         if self.portaCima:
+            self.passagem[0].draw()
             self.portas[0].draw()
         if self.portaBaixo:
+            self.passagem[1].draw()
             self.portas[1].draw()
         if self.portaDireita:
+            self.passagem[2].draw()
             self.portas[2].draw()
         if self.portaEsquerda:
+            self.passagem[3].draw()
             self.portas[3].draw()
+
+        for p in self.portas:
+            p.update()
 
     def DrawFrenteJogador(self):
         if self.portaDireita:
@@ -164,5 +251,5 @@ class Sala:
         # DELETA A SALA E TUDO ASSOCIADO A ELA
         self.inimigos.clear()
         #self.sprite = Sprite(None)
-        self.portas.clear()
+        self.passagem.clear()
         self.col.clear()

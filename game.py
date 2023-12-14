@@ -36,6 +36,10 @@ def Reset():
     ultimasCoords.clear()
     jogador.set_position(w/2-40.5,h/2-40.5)
 
+    # VIDAS
+    jogador.vida.vida_atual = jogador.vida.vida_max
+    jogador.vida.atualizarCoracoes()
+
     # SALA ATIVA É A INICIAL
     active_sala = [0,0]
 
@@ -77,13 +81,12 @@ def Jogar():
 
     global vida_max
     global vida_atual
-    vidas = vida_atual
+    global vetCoracoes
 
     Reset()
 
     cursor.hide()
     janela.set_title('Dojo Cat - Build Incompleta')
-    vidas = 3
     pause = 0
     while True:
         jogador_centro_x = jogador.x + jogador.width / 2
@@ -192,15 +195,24 @@ def Jogar():
                         jogador.set_position(ultimasCoords[0][0],ultimasCoords[0][1])
                     except:
                         pass
+            for j in i.colPortas:
+                if(jogador.collided(j)):
+                    velocity_x = 0
+                    velocity_y = 0
+
+                    try:
+                        jogador.set_position(ultimasCoords[0][0],ultimasCoords[0][1])
+                    except:
+                        pass
 
         # SPRITE DO JOGADOR
-        if(velocity_x == velMovimento):                                                  # Se estiver se movendo pra direita, estado da animação 0 (Direita)
+        if(velocity_x == velMovimento and not swapDown and not swapLeft and not swapUp and not swapRight):                                                  # Se estiver se movendo pra direita, estado da animação 0 (Direita)
             jogador.setAnim(1)
 
-        if(velocity_x == -velMovimento):                                                # Se estiver se movendo pra esquerda, estado da animação 0 (Esquerda)
+        if(velocity_x == -velMovimento and not swapDown and not swapLeft and not swapUp and not swapRight):                                                # Se estiver se movendo pra esquerda, estado da animação 0 (Esquerda)
             jogador.setAnim(2)
         
-        if((velocity_y == velMovimento or velocity_y == -velMovimento) and not usandoInvestida and not attacking):
+        if((velocity_y == velMovimento or velocity_y == -velMovimento) and not usandoInvestida and not attacking and not swapDown and not swapLeft and not swapUp and not swapRight):
             if(ultimaDir=='left'):
                 jogador.setAnim(2)
                 
@@ -215,7 +227,7 @@ def Jogar():
                 jogador.setAnim(4)
                 ultimaDir = 'left'
 
-        if(velocity_x == 0 and velocity_y == 0 and not attacking):
+        if(velocity_x == 0 and velocity_y == 0 and not attacking and not swapDown and not swapLeft and not swapUp and not swapRight):
             if(ultimaDir=='left'):
                 jogador.image.set_sequence(8,8,True)
             if(ultimaDir=='right'):
@@ -226,9 +238,10 @@ def Jogar():
         if(jogador.x < 0):                                                   # Jogador passou para sala a ESQUERDA
             swapLeft = True
         if(swapLeft and pause == 0):
+            jogador.setAnim(2)
 
             tempo_resto = w/vel_cam_x
-            vel_jogador = (w-jogador.width-20)/tempo_resto
+            vel_jogador = (w-jogador.width-120)/tempo_resto
             
             if(timer <= tempo_resto):
                 for s in todos_sprites:
@@ -243,9 +256,10 @@ def Jogar():
         if(jogador.x > w-jogador.width):                                      # Jogador passou para sala a DIREITA
             swapRight = True
         if(swapRight and pause == 0):
+            jogador.setAnim(1)
 
             tempo_resto = w/vel_cam_x
-            vel_jogador = (w-jogador.width-20)/tempo_resto
+            vel_jogador = (w-jogador.width-120)/tempo_resto
             
             if(timer <= tempo_resto):
                 for s in todos_sprites:
@@ -260,9 +274,14 @@ def Jogar():
         if(jogador.y < 0):                                                    # Jogador passou para sala a CIMA
             swapUp = True
         if(swapUp and pause == 0):
+            if(ultimaDir=='left'):
+                jogador.setAnim(2)
+                
+            if(ultimaDir=='right'):
+                jogador.setAnim(1)
 
             tempo_resto = h/vel_cam_y
-            vel_jogador = (h-jogador.height-10)/tempo_resto
+            vel_jogador = (h-jogador.height-85)/tempo_resto
             
             if(timer <= tempo_resto):
                 for s in todos_sprites:
@@ -277,9 +296,14 @@ def Jogar():
         if(jogador.y > h-jogador.height):                                      # Jogador passou para sala a BAIXO
             swapDown = True
         if(swapDown and pause == 0):
+            if(ultimaDir=='left'):
+                jogador.setAnim(2)
+                
+            if(ultimaDir=='right'):
+                jogador.setAnim(1)
 
             tempo_resto = h/vel_cam_y
-            vel_jogador = (h-jogador.height-10)/tempo_resto
+            vel_jogador = (h-jogador.height-85)/tempo_resto
             
             if(timer <= tempo_resto):
                 for s in todos_sprites:
@@ -326,13 +350,11 @@ def Jogar():
         #        ganharVida()
         #        vidas +=1
 
-        drawCoracoes()
+        jogador.vida.drawCoracoes()
         drawBarra()
         # TELA DE MORTE:
 
-        if(key_input.key_pressed("p")):
-            vidas -=1
-        if vidas <= 0:
+        if jogador.vida.vida_atual <= 0:
             pause = 1
             fundoEscuro.draw()
             janela.draw_text('VOCÊ MORREU',200,100,150,(255,0,0),'chapaza')
@@ -352,7 +374,7 @@ def Jogar():
 
         if(key_input.key_pressed("esc")):
             pause = 1
-        if pause == 1 and vidas > 0:
+        if pause == 1 and jogador.vida.vida_atual > 0:
             fundoEscuro.draw()
             janela.draw_text('JOGO PAUSADO',200,100,150,(255,255,255),'chapaza')
             continua = GameImage('assets/botaocontinua.png')

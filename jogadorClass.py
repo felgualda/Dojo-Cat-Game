@@ -1,5 +1,6 @@
 from PPlay.sprite import *
 from PPlay.animation import *
+from vida import *
 
 class Jogador:
     def __init__(self,pos):
@@ -7,6 +8,7 @@ class Jogador:
         self.y = pos[1]
 
         self.tag = 'player'
+        self.vida = Vida()
         
         self.image = Sprite('assets/gato_animacao-Sheet.png',36)
 
@@ -23,6 +25,9 @@ class Jogador:
 
         self.width = self.image.width
         self.height = self.image.height
+
+    def LevarDano(self):
+        self.vida.levarDano()
 
     def collided(self,col):
         return self.colisao.collided(col)

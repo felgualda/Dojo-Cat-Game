@@ -1,33 +1,36 @@
-from globalVar import *
 from PPlay.sprite import *
-import menu
-import game
 
-vetCoracoes = [Sprite('assets/hearts.png',2) for x in range(vida_max)]
-tam_coracao_x = vetCoracoes[0].width
+class Vida():
+    def __init__(self):
+        self.vida_max = 4
+        self.vida_atual = self.vida_max
 
-for i in range(len(vetCoracoes)):
-    vetCoracoes[i].set_position(pos_barravida[0] + i * tam_coracao_x + offset_barravida *i, pos_barravida[1])
-
-def drawCoracoes():
-    for i in range(len(vetCoracoes)):
-        vetCoracoes[i].draw()
-
-def levarDano():
-    global vida_atual
-    vida_atual -= 1
-    atualizarCoracoes()
-
-def ganharVida():
-    global vida_atual
-    vida_atual += 1
-    atualizarCoracoes()
+        self.pos_barravida = (15,675 - 50)
+        self.offset_barravida = 5
 
 
-def atualizarCoracoes():
-    global vida_atual
-    for i in range(vida_max):
-        if i < vida_atual:
-            vetCoracoes[i].set_curr_frame(0)
-        else:
-            vetCoracoes[i].set_curr_frame(1)
+        self.vetCoracoes = [Sprite('assets/hearts.png',2) for x in range(self.vida_max)]
+        self.tam_coracao_x = self.vetCoracoes[0].width
+
+        for i in range(len(self.vetCoracoes)):
+            self.vetCoracoes[i].set_position(self.pos_barravida[0] + i * self.tam_coracao_x + self.offset_barravida *i, self.pos_barravida[1])
+
+    def drawCoracoes(self):
+        for i in range(len(self.vetCoracoes)):
+            self.vetCoracoes[i].draw()
+
+    def levarDano(self):
+        self.vida_atual -= 1
+        self.atualizarCoracoes()
+
+    def ganharVida(self):
+        self.vida_atual += 1
+        self.atualizarCoracoes()
+
+
+    def atualizarCoracoes(self):
+        for i in range(self.vida_max):
+            if i < self.vida_atual:
+                self.vetCoracoes[i].set_curr_frame(0)
+            else:
+                self.vetCoracoes[i].set_curr_frame(1)
