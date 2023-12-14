@@ -53,7 +53,7 @@ class Jogador:
     def attack(self,soundmanager):
         if len(self.enemiesInRange) != 0:
             soundmanager.som1()
-        if len(self.enemiesInRange) == 0:
+        if len(self.enemiesInRange) == 0 and len(self.interactablesInRange) == 0:
             soundmanager.som2()
         
         for e in self.enemiesInRange:

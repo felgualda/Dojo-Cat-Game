@@ -2,6 +2,7 @@ from PPlay.sprite import *
 from inimigo import *
 from box import *
 from pygame import mixer
+from projectile import *
 
 class Sala:
     
@@ -61,13 +62,14 @@ class Sala:
 
         # INIMIGOS
         self.inimigos = []
+        self.projectiles = []
         
         # MISC
         self.interactables = []
 
         # VARIAÇÃO DE SALA
         if(self.var == 1):
-            self.inimigos = [Inimigo((self.x + 1200/2, self.y + 675/2),1)]
+            self.inimigos = [Inimigo((self.x + 1200/2, self.y + 675/2),2),Inimigo((self.x + 1200/2, self.y + 200),2),Inimigo((self.x + 350, self.y + 675/2),1),Inimigo((self.x + 850, self.y + 675/2),1)]
             self.interactables = [Box(self.x + 170,self.y+178),Box(self.x+908,self.y+511)]
 
         # RENDER DEPOIS
@@ -183,12 +185,23 @@ class Sala:
         self.sprite.set_position(self.x, self.y)
 
     def UpdateEntities(self,jogador,janela,soundmanager):
+        for i in self.projectiles:
+            if(not i.existe):
+                self.projectiles.remove(i)
+            else:
+                i.Update(janela,jogador)
+
         for i in self.interactables:
             if(i.broken):
                 self.interactables.remove(i)
 
         for i in self.inimigos:
-            i.Update(jogador,janela)
+            if(i.var==2):
+                if(i.Update(jogador,janela,self.col,self.colPortas)):
+                    i.atirou = False
+                    self.projectiles.append(Projectile(i.centro_x,i.centro_y,i.dirJogador))
+            else:
+                i.Update(jogador,janela,self.col,self.colPortas)
             if(not i.vivo):
                 self.inimigos.remove(i)
         if(len(self.inimigos)<=0):
@@ -249,6 +262,9 @@ class Sala:
         
         for b in self.interactables:
             b.Draw()
+
+        for i in self.projectiles:
+            i.Draw()
 
         for i in range(len(self.portas)):
             self.portas[i].update()

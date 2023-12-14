@@ -260,6 +260,8 @@ def Jogar():
                     except:
                         pass
 
+        print(jogador.enemiesInRange)
+
         # SPRITE DO JOGADOR
         if(velocity_x == velMovimento and not swapDown and not swapLeft and not swapUp and not swapRight):                                                  # Se estiver se movendo pra direita, estado da animação 0 (Direita)
             jogador.setAnim(1)
