@@ -82,9 +82,10 @@ def SetSalas(a):
      for i in range(len(a)):
           for j in range(len(a)):
                 if a[i][j] == 1:
-                    todasSalas.append(Sala((j-spawn[1],i-spawn[0]),1))
+                    variation = random.randint(2,21)
+                    todasSalas.append(Sala((j-spawn[1],i-spawn[0]),variation))
                 if a[i][j] == 3:
-                    todasSalas.append(Sala((j-spawn[1],i-spawn[0]),3))
+                    todasSalas.append(Sala((j-spawn[1],i-spawn[0]),30))
     
      for i in todasSalas:
           lista_coords.append(i.adress)

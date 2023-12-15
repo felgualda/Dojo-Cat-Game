@@ -211,7 +211,7 @@ def Jogar():
                     for e in s.inimigos:
                         if(jogador.collided(e.image) and not e in inimigosDanificados):
                             inimigosDanificados.append(e)
-                            e.LevarDano(40)
+                            e.LevarDano(50)
                     for e in s.interactables:
                         if(jogador.collided(e.image) and not e in interactablesAfetados):
                             inimigosDanificados.append(e)
@@ -388,7 +388,9 @@ def Jogar():
                     jogador.CheckHitbox(s.inimigos[i])
                 for i in range(len(s.interactables)):
                     jogador.CheckHitbox(s.interactables[i])
-                if(s.var==3):
+                for i in range(len(s.spikes)):
+                    jogador.CheckHitbox(s.spikes[i])
+                if(s.var==30):
                     jogador.CheckHitbox(s.bossBattle)
 
         if(not swapLeft and not swapRight and not swapDown and not swapUp and podeMover and pause ==0):

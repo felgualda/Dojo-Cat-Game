@@ -16,7 +16,7 @@ class BossBattle():
         self.bossImage.set_sequence_time(0,23,120,True)
         self.bossDmgImage.set_sequence_time(0,23,120,True)
 
-        self.bossAttackRange = 150
+        self.bossAttackRange = 200
         self.bossState = 0
 
         self.socando = False

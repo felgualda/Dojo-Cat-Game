@@ -1,6 +1,7 @@
 from PPlay.sprite import *
 from inimigo import *
 from box import *
+from spike import *
 from pygame import mixer
 from projectile import *
 from bossbattle import *
@@ -67,14 +68,114 @@ class Sala:
         
         # MISC
         self.interactables = []
+        self.spikes = []
 
         # VARIAÇÃO DE SALA
         if(self.var == 1):
             self.inimigos = [Inimigo((self.x + 1200/2, self.y + 675/2),2),Inimigo((self.x + 1200/2, self.y + 200),2),Inimigo((self.x + 350, self.y + 675/2),1),Inimigo((self.x + 850, self.y + 675/2),1)]
             self.interactables = [Box(self.x + 170,self.y+178),Box(self.x+908,self.y+511)]
+        if(self.var == 2):
+            self.inimigos = [Inimigo((self.x+250 , self.y+178 ),1),Inimigo((self.x+170 , self.y+511 ),1),Inimigo((self.x+908 , self.y+511 ),1)]
+            self.interactables = [Box(self.x+170,self.y+178),Box(self.x+908,self.y+178)]
+            self.spikes = [Spike(self.x+170,self.y+258),Spike(self.x+908,self.y+258),Spike(self.x+599-36,self.y+362)]
+        if(self.var == 3):
+            self.inimigos = [Inimigo((self.x+170 , self.y+288 ),1),Inimigo((self.x+170 , self.y+178 ),2),Inimigo((self.x+908 , self.y+178 ),2)]
+            self.interactables= [Box(self.x+170,self.y+511),Box(self.x+908,self.y+511)]
+            self.spikes = [Spike(self.x+250,self.y+178),Spike(self.x+250,self.y+511),Spike(self.x+828,self.y+178),Spike(self.x+828,self.y+511)]
+
+        if(self.var == 4):
+            self.inimigos = [Inimigo((self.x+170 , self.y+511 ),1),Inimigo((self.x+908 , self.y+288 ),1),Inimigo((self.x+908 , self.y+178 ),2)]
+            self.interactables = [Box(self.x + 170,self.y+178),Box(self.x+908,self.y+511)]
+            self.spikes = [Spike(self.x+679-36,self.y+362),Spike(self.x+599-36,self.y+362),Spike(self.x+519-36,self.y+362)]
+
+        if(self.var == 5):
+            self.inimigos = [Inimigo((self.x+270 , self.y+178 ),1),Inimigo((self.x+808 , self.y+178 ),1),Inimigo((self.x+170 , self.y+178 ),2),Inimigo((self.x+908 , self.y+511 ),2)]
+            self.interactables = [Box(self.x+908,self.y+178),Box(self.x+170,self.y+511)]
+            self.spikes = [Spike(self.x+599-36,self.y+282),Spike(self.x+599-36,self.y+362),Spike(self.x+599-36,self.y+442)]
+
+        if(self.var == 6):
+            self.inimigos = [Inimigo((self.x+170 , self.y+178 ),1),Inimigo((self.x+170 , self.y+511 ),1)]
+            self.interactables = [Box(self.x+908,self.y+511),Box(self.x+908,self.y+178)]
+            self.spikes = [Spike(self.x+679-36,self.y+362),Spike(self.x+599-36,self.y+362),Spike(self.x+519-36,self.y+362)]
+
+        if(self.var == 7):
+            self.inimigos = [Inimigo((self.x+808 , self.y+178 ),1),Inimigo((self.x+808 , self.y+511 ),1),Inimigo((self.x+908 , self.y+178 ),2),Inimigo((self.x+908 , self.y+511 ),2)]
+            self.interactables = [Box(self.x + 170,self.y+178),Box(self.x+170,self.y+511)]
+            self.spikes = [Spike(self.x+170,self.y+258),Spike(self.x+250,self.y+258),Spike(self.x+170,self.y+431)]
+
+        if(self.var == 8):
+            self.inimigos = [Inimigo((self.x+808 , self.y+178 ),1),Inimigo((self.x+250 , self.y+511 ),1),Inimigo((self.x+808 , self.y+511 ),2)]
+            self.interactables = [Box(self.x + 170,self.y+178),Box(self.x+908,self.y+178),Box(self.x+170,self.y+511),Box(self.x+908,self.y+511)]
+            self.spikes = [Spike(self.x+250,self.y+258),Spike(self.x+250,self.y+431),Spike(self.x+828,self.y+258),Spike(self.x+828,self.y+431)]
+
+        if(self.var == 9):
+            self.inimigos = [Inimigo((self.x+170 , self.y+178 ),1) ,Inimigo((self.x+908 , self.y+511 ),1),Inimigo((self.x+728 , self.y+178 ),2),Inimigo((self.x+908 , self.y+368 ),2)]
+            self.interactables = [Box(self.x+170,self.y+431),Box(self.x+250,self.y+511)]
+            self.spikes = [Spike(self.x+908,self.y+178),Spike(self.x+908,self.y+258),Spike(self.x+828,self.y+178)]
+
+        if(self.var == 10):
+            self.inimigos = [Inimigo((self.x+908 , self.y+178 ),1),Inimigo((self.x+751 , self.y+511 ),2),Inimigo((self.x+908 , self.y+431 ),2)]
+            self.interactables = [Box(self.x + 250,self.y+178),Box(self.x + 170,self.y+258)]
+            self.spikes = [Spike(self.x+457,self.y+511),Spike(self.x+457,self.y+431),Spike(self.x+671+36,self.y+511),Spike(self.x+671-36,self.y+431)]
+
+        if(self.var == 11):
+            self.inimigos = [Inimigo((self.x+908 , self.y+511 ),1),Inimigo((self.x+170 , self.y+178 ),1),Inimigo((self.x+170 , self.y+401 ),2),Inimigo((self.x+270 , self.y+511 ),2)]
+            self.interactables = [Box(self.x+828,self.y+178),Box(self.x+908,self.y+258)]
+            self.spikes = [Spike(self.x+748,self.y+178),Spike(self.x+828,self.y+258)]
+
+        if(self.var == 12):
+            self.inimigos = [Inimigo((self.x+170 , self.y+288 ),2),Inimigo((self.x+270 , self.y+178 ),2)]
+            self.interactables = [Box(self.x+828,self.y+511),Box(self.x+908,self.y+431)] 
+            self.spikes = [Spike(self.x+599-36,self.y+362),Spike(self.x+748,self.y+511),Spike(self.x+828,self.y+431)]
+
+        if(self.var == 13):
+            self.inimigos = [Inimigo((self.x+908 , self.y+178 ),1),Inimigo((self.x+170 , self.y+511 ),1),Inimigo((self.x+908 , self.y+511 ),2)]
+            self.interactables = [Box(self.x + 170,self.y+178),Box(self.x + 250,self.y+178)] 
+            self.spikes = [Spike(self.x+599-36,self.y+282),Spike(self.x+599-36,self.y+362),Spike(self.x+599-36,self.y+442)]
+	
+        if(self.var == 14):
+            self.inimigos = [Inimigo((self.x+170 , self.y+511 ),1),Inimigo((self.x+808 , self.y+178 ),1),Inimigo((self.x+908 , self.y+178 ),2),Inimigo((self.x+908 , self.y+511 ),2)]
+            self.interactables = [Box(self.x + 170,self.y+178),Box(self.x + 170,self.y+258)]
+            self.spikes = [Spike(self.x+679-36,self.y+362),Spike(self.x+599-36,self.y+362),Spike(self.x+519-36,self.y+362)]
+
+        if(self.var == 15):
+            self.inimigos = [Inimigo((self.x+170 , self.y+178 ),2),Inimigo((self.x+908 , self.y+178 ),2)]
+            self.interactables = [Box(self.x+170,self.y+511),Box(self.x+250,self.y+511)]
+            self.spikes = [Spike(self.x+170,self.y+264),Spike(self.x+250,self.y+264),Spike(self.x+908+36,self.y+264),Spike(self.x+828+36,self.y+264)]
+
+        if(self.var == 16):
+            self.inimigos = [Inimigo((self.x+170 , self.y+178 ),1),Inimigo((self.x+908 , self.y+178 ),2),Inimigo((self.x+908 , self.y+511 ),2)]
+            self.interactables = [Box(self.x+170,self.y+511),Box(self.x+170,self.y+431)]
+            self.spikes = [Spike(self.x+250,self.y+511),Spike(self.x+330,self.y+511)]
+	
+        if(self.var == 17):
+            self.inimigos = [Inimigo((self.x+170 , self.y+511 ),1),Inimigo((self.x+908 , self.y+178 ),1),Inimigo((self.x+170 , self.y+178 ),2)]
+            self.interactables = [Box(self.x+908,self.y+511),Box(self.x+828,self.y+511)]
+            self.spikes = [Spike(self.x+908,self.y+431),Spike(self.x+748,self.y+511)]
+
+        if(self.var == 18):
+            self.inimigos = [Inimigo((self.x+908 , self.y+178 ),1),Inimigo((self.x+270 , self.y+511 ),1),Inimigo((self.x+170 , self.y+178 ),2),Inimigo((self.x+170 , self.y+511 ),2)]
+            self.interactables = [Box(self.x+908,self.y+511),Box(self.x+908,self.y+431)]
+            self.spikes = [Spike(self.x+599-36,self.y+362),Spike(self.x+828,self.y+511)]
+
+        if(self.var == 19):
+            self.inimigos = [Inimigo((self.x+170 , self.y+178 ),1),Inimigo((self.x+908 , self.y+401 ),1),Inimigo((self.x+908 , self.y+511 ),2),Inimigo((self.x+170 , self.y+511 ),2)]
+            self.interactables = [Box(self.x+908,self.y+178),Box(self.x+828,self.y+178)]
+            self.spikes = [Spike(self.x+599-36,self.y+362),Spike(self.x+908,self.y+258)]
+
+        if(self.var == 20):
+            self.inimigos = [Inimigo((self.x+170 , self.y+178 ),2),Inimigo((self.x+170 , self.y+511 ),2)]
+            self.interactables = [Box(self.x+908,self.y+178),Box(self.x+908,self.y+258)]
+            self.spikes = [Spike(self.x+519-36,self.y+282),Spike(self.x+519-36,self.y+442),Spike(self.x+679-36,self.y+282),Spike(self.x+679-36,self.y+442)]
+        
+        if(self.var == 21):
+            self.inimigos = []
+            self.interactables = [Box(self.x+599-36,self.y+362),Box(self.x+519-36,self.y+282),Box(self.x+519-36,self.y+442),Box(self.x+679-36,self.y+282),Box(self.x+679-36,self.y+442)]
+            self.spikes = [Spike(self.x+439-36,self.y+202),Spike(self.x+439-36,self.y+522),Spike(self.x+759-36,self.y+202),Spike(self.x+759-36,self.y+522),Spike(self.x+359-36,self.y+202),Spike(self.x+359-36,self.y+522),Spike(self.x+289-36,self.y+202),Spike(self.x+289-36,self.y+522),Spike(self.x+839-36,self.y+202),Spike(self.x+919-36,self.y+202),Spike(self.x+839-36,self.y+522),Spike(self.x+919-36,self.y+522)]
+	    
 
         # BOSS
-        if(self.var==3):
+        if(self.var==30):
             self.bossBattle = BossBattle(self.x,self.y)
 
         # RENDER DEPOIS
@@ -168,7 +269,10 @@ class Sala:
         for i in self.interactables:
             i.move_x(speed)
 
-        if(self.var==3):
+        for i in self.spikes:
+            i.move_x(speed)
+
+        if(self.var==30):
             self.bossBattle.move_x(speed)
 
         self.sprite.set_position(self.x, self.y)
@@ -189,14 +293,17 @@ class Sala:
 
         for i in self.interactables:
             i.move_y(speed)
+
+        for i in self.spikes:
+            i.move_y(speed)
         
-        if(self.var==3):
+        if(self.var==30):
             self.bossBattle.move_y(speed)
 
         self.sprite.set_position(self.x, self.y)
 
     def UpdateEntities(self,jogador,janela,soundmanager):
-        if(self.var==3):
+        if(self.var==30):
             self.bossBattle.Update(jogador,janela)
 
         for i in self.projectiles:
@@ -218,8 +325,10 @@ class Sala:
                 i.Update(jogador,janela,self.col,self.colPortas)
             if(not i.vivo):
                 self.inimigos.remove(i)
-        if(len(self.inimigos)<=0):
+        if(len(self.inimigos)<=0 and not self.var==30):
             self.cleared=True
+        if(self.var==30):
+            self.cleared = not self.bossBattle.vivo
 
         if(not self.cleared and self.portasAbertas):
             self.FecharPortas(soundmanager)
@@ -276,6 +385,9 @@ class Sala:
         
         for b in self.interactables:
             b.Draw()
+        
+        for i in self.spikes:
+            i.Draw()
 
         for i in self.projectiles:
             i.Draw()
@@ -283,7 +395,7 @@ class Sala:
         for i in range(len(self.portas)):
             self.portas[i].update()
 
-        if(self.var==3):
+        if(self.var==30):
             self.bossBattle.Draw()
 
     def DrawFrenteJogador(self):

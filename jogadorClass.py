@@ -2,6 +2,7 @@ from PPlay.sprite import *
 from PPlay.animation import *
 from vida import *
 from pygame import mixer
+from particleHandler import *
 
 class Jogador:
     def __init__(self,pos):
@@ -16,6 +17,8 @@ class Jogador:
         self.colisao = Sprite('assets/colisao_player.png')
 
         self.hitbox = Sprite('assets/hitbox_player.png')
+
+        self.hitbox_pe = Sprite('assets/feet-colisao.png')
 
         self.image.set_sequence_time(0,36,60,True)
         self.image.set_sequence(0,0,True)
@@ -54,6 +57,12 @@ class Jogador:
                 self.interactablesInRange.append(other)
             if(not self.hitbox.collided(other.image) and other in self.interactablesInRange):
                 self.interactablesInRange.remove(other)
+        if(other.tag=='spike'):
+            if(self.hitbox_pe.collided(other.image)):
+                if(not self.vida.invencivel):
+                    FX_blood(self.x+self.image.width/2,self.y+self.image.height/2)
+                self.LevarDano()
+                self.vida.invencivel = True
 
     def attack(self,soundmanager):
         if len(self.enemiesInRange) != 0:
@@ -62,7 +71,7 @@ class Jogador:
             soundmanager.som2()
         
         for e in self.enemiesInRange:
-            e.LevarDano(100)
+            e.LevarDano(25)
             if(not e.vivo):
                 self.enemiesInRange.remove(e)
 
@@ -84,6 +93,7 @@ class Jogador:
             self.image.draw()
         #self.colisao.draw()
         #self.hitbox.draw()
+        #self.hitbox_pe.draw()
 
     def move_x(self,speed):
         self.x += speed
@@ -97,6 +107,7 @@ class Jogador:
         #print(str(self.image.get_initial_frame()) + ' ' + str(self.image.get_final_frame()) + ' ' + str(self.image.get_curr_frame()))
         self.image.update()
         self.colisao.set_position(self.x+27,self.y+3)
+        self.hitbox_pe.set_position(self.colisao.x,self.y+69)
 
         if(ultimaDir=='right'):
             self.hitbox.set_position(self.x+57,self.y-18)
