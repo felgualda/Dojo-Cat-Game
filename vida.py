@@ -2,7 +2,7 @@ from PPlay.sprite import *
 
 class Vida():
     def __init__(self):
-        self.vida_max = 4
+        self.vida_max = 5
         self.vida_atual = self.vida_max
 
         self.pos_barravida = (15,675 - 50)
@@ -22,8 +22,9 @@ class Vida():
         for i in range(len(self.vetCoracoes)):
             self.vetCoracoes[i].draw()
 
-    def levarDano(self):
+    def levarDano(self,soundmanager):
         if(not self.invencivel):
+            soundmanager.som8()
             self.vida_atual -= 1
             self.atualizarCoracoes()
             self.levouDano = True

@@ -5,6 +5,8 @@ from spike import *
 from pygame import mixer
 from projectile import *
 from bossbattle import *
+from heartDrop import *
+import random
 
 class Sala:
     
@@ -17,8 +19,10 @@ class Sala:
 
         self.var = var
         self.cleared = False
-
-        self.sprite = Sprite('assets/sala/sala.png')
+        if(self.var !=30):
+            self.sprite = Sprite('assets/sala/sala.png')
+        else:
+            self.sprite = Sprite('assets/boss_room_overlay.png')
         self.sprite.set_position(self.x,self.y)
         self.passagem = [Sprite('assets/sala/passages/TOP_PASSAGE.png'),Sprite('assets/sala/passages/BOTTOM_PASSAGE.png'),Sprite('assets/sala/passages/RIGHT_PASSAGE.png'),Sprite('assets/sala/passages/LEFT_PASSAGE.png')]
         self.portas = [Sprite('assets/portas/porta-cima_sheet.png',22),Sprite('assets/portas/porta-baixo_Sheet.png',22),Sprite('assets/portas/porta-direita_sheet.png',22),Sprite('assets/portas/porta-esquerda_sheet.png',22)]
@@ -116,7 +120,7 @@ class Sala:
         if(self.var == 10):
             self.inimigos = [Inimigo((self.x+908 , self.y+178 ),1),Inimigo((self.x+751 , self.y+511 ),2),Inimigo((self.x+908 , self.y+431 ),2)]
             self.interactables = [Box(self.x + 250,self.y+178),Box(self.x + 170,self.y+258)]
-            self.spikes = [Spike(self.x+457,self.y+511),Spike(self.x+457,self.y+431),Spike(self.x+671+36,self.y+511),Spike(self.x+671-36,self.y+431)]
+            self.spikes = [Spike(self.x+457,self.y+511),Spike(self.x+457,self.y+431),Spike(self.x+671,self.y+511),Spike(self.x+671,self.y+431)]
 
         if(self.var == 11):
             self.inimigos = [Inimigo((self.x+908 , self.y+511 ),1),Inimigo((self.x+170 , self.y+178 ),1),Inimigo((self.x+170 , self.y+401 ),2),Inimigo((self.x+270 , self.y+511 ),2)]
@@ -303,27 +307,36 @@ class Sala:
         self.sprite.set_position(self.x, self.y)
 
     def UpdateEntities(self,jogador,janela,soundmanager):
+
         if(self.var==30):
-            self.bossBattle.Update(jogador,janela)
+            self.bossBattle.Update(jogador,janela,soundmanager)
 
         for i in self.projectiles:
             if(not i.existe):
                 self.projectiles.remove(i)
             else:
-                i.Update(janela,jogador)
+                i.Update(janela,jogador,soundmanager)
 
         for i in self.interactables:
-            if(i.broken):
+            if(i.tag=='crate' and i.broken):
+                chance = random.randint(0,100)
+                if(chance < 20):
+                    self.interactables.append(Coracao(i.x+i.image.width/2,i.y+i.image.height/2))
+                self.interactables.remove(i)
+            if(i.tag=='coracao' and not i.existe):
                 self.interactables.remove(i)
 
         for i in self.inimigos:
             if(i.var==2):
-                if(i.Update(jogador,janela,self.col,self.colPortas)):
+                if(i.Update(jogador,janela,self.col,self.colPortas,soundmanager)):
                     i.atirou = False
                     self.projectiles.append(Projectile(i.centro_x,i.centro_y,i.dirJogador))
             else:
-                i.Update(jogador,janela,self.col,self.colPortas)
+                i.Update(jogador,janela,self.col,self.colPortas,soundmanager)
             if(not i.vivo):
+                chance = random.randint(0,100)
+                if(chance < 20):
+                    self.interactables.append(Coracao(i.centro_x,i.centro_y))
                 self.inimigos.remove(i)
         if(len(self.inimigos)<=0 and not self.var==30):
             self.cleared=True
@@ -366,7 +379,7 @@ class Sala:
 
         # Coloca portas na lista de colisão caso cleared seja falso
         
-    def DrawSala(self):
+    def DrawSala(self,janela):
         self.sprite.draw()
 
         #Desenhar portas caso existam salas adjascentes correspondentes
@@ -384,7 +397,10 @@ class Sala:
             self.portas[3].draw()
         
         for b in self.interactables:
-            b.Draw()
+            if(b.tag=='coracao'):
+                b.Draw(janela)
+            else:
+                b.Draw()
         
         for i in self.spikes:
             i.Draw()
@@ -415,6 +431,9 @@ class Sala:
         
         if self.portaCima:
             self.renderFrente[4].draw()
+
+        if(self.var==30):
+            self.bossBattle.DrawBossBar()
 
     def Delete(self):
         # DELETA A SALA E TUDO ASSOCIADO A ELA

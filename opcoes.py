@@ -5,7 +5,7 @@ from PPlay.sprite import *
 from PPlay.keyboard import *
 from ctrls import *
 
-def Opcoes() -> int:
+def Opcoes(soundmanager) -> int:
     w,h = 1200,675
     janela = Window(w,h)
     fundo = GameImage('assets/f.png')
@@ -24,6 +24,7 @@ def Opcoes() -> int:
             controle = GameImage('assets/botaocontrole.png')
             controle.set_position(janela.width/2 - controle.width/2, janela.height/2 - controle.height/2 - 10 )
         if cursor.is_over_area((controle.x , controle.y),(controle.x + controle.width , controle.y + controle.height)) and cursor.is_button_pressed(1) and timer > 0.5:
+            soundmanager.som11()
             x = control()
             print(x)
 

@@ -1,5 +1,6 @@
 from PPlay.sprite import *
 from particleHandler import *
+import soundmanager
 
 class Box():
     def __init__(self,pos_x,pos_y):
@@ -21,9 +22,10 @@ class Box():
         self.y += speed
         self.image.set_position(self.x, self.y)
 
-    def Break(self):
+    def Break(self,soundManager):
         if(not self.broken):
             FX_crate(self.x+self.image.width/2,self.y+self.image.height/2)
+            soundManager.som6()
         self.broken = True
        
     def Draw(self):

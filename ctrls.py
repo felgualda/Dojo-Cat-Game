@@ -22,7 +22,7 @@ def control() -> int:
 
     while True:
         if key.key_pressed('esc'):
-            menu.MenuPrincipal()
+            break
         fundo.draw()
 
         janela.draw_text('W move o personagem para cima', 350 , 280 , 20 , (251,116,2) , 'chapaza')

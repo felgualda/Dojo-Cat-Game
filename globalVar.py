@@ -68,6 +68,8 @@ timer = 0
 
 soundManager = AudioManager()
 
+timerStartGame = 0
+
 # DESACELERAÇÃO
 dc_speed = 1200
 # UI

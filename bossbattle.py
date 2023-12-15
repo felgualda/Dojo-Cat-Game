@@ -7,8 +7,15 @@ class BossBattle():
         #BOSS
         self.tag='boss'
 
+        self.started = False
+
         self.bossImage = Sprite('assets/inimigos/boss_sheet.png',24)
         self.bossDmgImage = Sprite('assets/inimigos/boss_sheet_dmg.png',24)
+
+        self.bossbar = Sprite('assets/bossbar.png',22)
+        self.bossbar.set_position(294,29)
+
+        self.quadro = 0
 
         self.bossImage.set_position(x+600-self.bossImage.width/2,y+337.5-self.bossImage.height/2)
         self.bossDmgImage.set_position(x+600-self.bossImage.width/2,y+337.5-self.bossImage.height/2)
@@ -26,7 +33,8 @@ class BossBattle():
         self.bossSocoCooldownTimer = 0
 
         self.vivo = True
-        self.vida = 1500
+        self.vidaMax = 1100
+        self.vida = self.vidaMax
         self.levouDano = False
 
         self.tempoSpriteDano = 0.25
@@ -45,8 +53,12 @@ class BossBattle():
             self.bossDmgImage.draw()
         else:
             self.bossImage.draw()
+    
+    def DrawBossBar(self):
+        if(self.started):
+            self.bossbar.draw()
 
-    def Attack(self,jogador):
+    def Attack(self,jogador,soundmanager):
         norma = math.sqrt(((jogador.x +jogador.width/2) - (self.bossImage.x+self.bossImage.width/2))**2 + ((jogador.y +jogador.height/2) - (self.bossImage.y+self.bossImage.height/2))**2)
 
         if(self.bossImage.x+self.bossImage.width/2 > jogador.x and not self.socando):
@@ -66,7 +78,7 @@ class BossBattle():
         if(self.bossImage.get_curr_frame()==12 or self.bossImage.get_curr_frame()==21):
             # Frame de ataque
             if(self.podeAtacar and norma < self.bossAttackRange):
-                jogador.LevarDano()
+                jogador.LevarDano(soundmanager)
             self.podeAtacar = False
             self.bossSocoCooldownTimer = 0
 
@@ -79,8 +91,13 @@ class BossBattle():
         if(self.vivo):
             self.vida -= dano
             self.levouDano = True
+            self.quadro = ((self.vidaMax-self.vida)//50)
 
-    def Update(self,jogador,janela):
+    def Update(self,jogador,janela,soundmanager):
+        
+        if(self.bossbar.get_curr_frame() != self.quadro):
+            self.bossbar.set_curr_frame(self.quadro)
+
         if(self.vivo):
 
             if(self.levouDano):
@@ -113,9 +130,10 @@ class BossBattle():
                 self.bossState = 1
 
             if(self.bossState==1):
-                self.Attack(jogador)
+                self.Attack(jogador,soundmanager)
             
             self.bossDmgImage.update()
             self.bossImage.update()
+            self.bossbar.update
             
 

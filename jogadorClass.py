@@ -35,13 +35,13 @@ class Jogador:
         self.invencivelTimer = 0
         self.invencivelTimerSec = 0
 
-    def LevarDano(self):
-        self.vida.levarDano()
+    def LevarDano(self,soundmanager):
+        self.vida.levarDano(soundmanager)
 
     def collided(self,col):
         return self.colisao.collided(col)
     
-    def CheckHitbox(self,other):
+    def CheckHitbox(self,other,soundmanager):
         if(other.tag=='enemy'):
             if(self.hitbox.collided(other.image) and not other in self.enemiesInRange):
                 self.enemiesInRange.append(other)
@@ -61,8 +61,12 @@ class Jogador:
             if(self.hitbox_pe.collided(other.image)):
                 if(not self.vida.invencivel):
                     FX_blood(self.x+self.image.width/2,self.y+self.image.height/2)
-                self.LevarDano()
+                self.LevarDano(soundmanager)
                 self.vida.invencivel = True
+        if(other.tag=='coracao'):
+            if(self.hitbox_pe.collided(other.image)):
+                if(self.vida.vida_atual < self.vida.vida_max):
+                    other.Coletar(soundmanager,self.vida)
 
     def attack(self,soundmanager):
         if len(self.enemiesInRange) != 0:
@@ -76,7 +80,7 @@ class Jogador:
                 self.enemiesInRange.remove(e)
 
         for e in self.interactablesInRange:
-            e.Break()
+            e.Break(soundmanager)
             if(e.broken):
                 self.interactablesInRange.remove(e)
     

@@ -20,7 +20,7 @@ opcoes.set_position(janela.width/2 - opcoes.width/2, janela.height/2 - opcoes.he
 sair.set_position(janela.width/2 - sair.width/2, janela.height/2 + sair.height/2 + 80)
 
 def MenuPrincipal():
-    global w,h,janela,cursor,fundo,jogar,opcoes,sair
+    global w,h,janela,cursor,fundo,jogar,opcoes,sair,soundManager
     cursor.unhide()
 
     janela.set_title('Dojo Cat | Menu Principal')
@@ -66,7 +66,8 @@ def MenuPrincipal():
         if cursor.is_over_area((opcoes.x , opcoes.y),(opcoes.x + opcoes.width , opcoes.y + opcoes.height)) and cursor.is_button_pressed(1) and timer > 0.5:   
             # Caso o cursor esteja em cima do botão Opções e o
             # botão esquerdo do mouse for apertado -- > Chamar todo o "opcoes.py".
-            x = Opcoes()
+            soundManager.som11()
+            x = Opcoes(soundManager)
             print(x)
         
         # Botão "jogar":
@@ -74,6 +75,7 @@ def MenuPrincipal():
             musicalobby.music.stop()
             # Caso o cursor esteja em cima do botão Jogar,
             # e o botão essquerdo do mouse for apertado --> Chamar todo o "jogar.py".
+            soundManager.som11()
             x = game.Jogar()
             print(x)
         
@@ -82,6 +84,7 @@ def MenuPrincipal():
         elif cursor.is_over_area(( sair.x ,sair.y),(sair.x + sair.width, sair.y + sair.height )) and cursor.is_button_pressed(1) and timer > 0.5:
             # Caso o cursor esteja em cimma do botão sair e o
             # botão do mouse for apertado --> Fechar Janela
+            soundManager.som11()
             janela.close()
         # Desenhos:
         fundo.draw()

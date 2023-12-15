@@ -23,6 +23,13 @@ def Reset():
     global inimigosDanificados
     global interactablesAfetados
     global timersoma
+    global timerStartGame
+    global swapDown,swapLeft,swapRight,swapUp
+    global timer
+
+    timerStartGame = 0
+    swapDown = swapLeft = swapRight = swapUp = False
+    timer = 0
 
     timersoma = 0
     # GERA O MAPA
@@ -62,6 +69,11 @@ def somandar():
     somandada = pygame.mixer.Sound('audio/andada.mp3')
     somandada.set_volume(0.2)
     somandada.play()
+def som3(): # Som da investida
+        sominvestida = mixer.Sound('audio/investida.mp3')
+        sominvestida.set_volume(0.2)
+        sominvestida.play()
+
 
 def Jogar():
     # VARIÁVEIS GLOBAIS
@@ -105,6 +117,7 @@ def Jogar():
     global vetCoracoes
 
     global timersoma
+    global timerStartGame
 
     Reset()
 
@@ -117,10 +130,11 @@ def Jogar():
         jogador_centro_y = jogador.y + jogador.height / 2
         cursor_x, cursor_y = cursor.get_position()
 
+        timerStartGame += janela.delta_time()
         timersoma += janela.delta_time()
 
         # MOVIMENTO DO JOGADOR
-        if(pause == 0):
+        if(pause == 0 and timerStartGame >= 1.5):
             if(key_input.key_pressed('w') and not usandoInvestida):                                      # Tecla W Pressionada
                 if timersoma > 0.5:
                     timersoma = 0
@@ -184,7 +198,7 @@ def Jogar():
             # ATAQUE
             #print(jogador.enemiesInRange)
 
-            if(not usandoInvestida and cursor.is_button_pressed(3) and not attacking):
+            if(not usandoInvestida and cursor.is_button_pressed(1) and not attacking):
                 attacking = True
                 jogador.attack(soundManager)
             if(attacking):
@@ -202,6 +216,7 @@ def Jogar():
 
         if(key_input.key_pressed('space') and not usandoInvestida and cooldownInvestidaTimer > cooldownInvestida and not (swapDown or swapLeft or swapRight or swapUp) and pause == 0 and not attacking):
             usandoInvestida = True
+            som3()
             barraInvestida.set_curr_frame(0)
 
         if(usandoInvestida and pause == 0):
@@ -213,9 +228,10 @@ def Jogar():
                             inimigosDanificados.append(e)
                             e.LevarDano(50)
                     for e in s.interactables:
-                        if(jogador.collided(e.image) and not e in interactablesAfetados):
-                            inimigosDanificados.append(e)
-                            e.Break()
+                        if(e.tag=='crate'):
+                            if(jogador.collided(e.image) and not e in interactablesAfetados):
+                                inimigosDanificados.append(e)
+                                e.Break(soundManager)
 
 
             jogador.vida.invencivel = True
@@ -376,7 +392,7 @@ def Jogar():
         janela.set_background_color((22,22,22))
         
         for s in todos_sprites:
-            s.DrawSala()
+            s.DrawSala(janela)
 
         jogador.draw()
 
@@ -385,13 +401,14 @@ def Jogar():
             if(active_sala[0] == s.adress[0] and active_sala[1] == s.adress[1] and not swapDown and not swapLeft and not swapRight and not swapUp and pause == 0):
                 s.UpdateEntities(jogador,janela,soundManager)
                 for i in range(len(s.inimigos)):
-                    jogador.CheckHitbox(s.inimigos[i])
+                    jogador.CheckHitbox(s.inimigos[i],soundManager)
                 for i in range(len(s.interactables)):
-                    jogador.CheckHitbox(s.interactables[i])
+                    jogador.CheckHitbox(s.interactables[i],soundManager)
                 for i in range(len(s.spikes)):
-                    jogador.CheckHitbox(s.spikes[i])
+                    jogador.CheckHitbox(s.spikes[i],soundManager)
                 if(s.var==30):
-                    jogador.CheckHitbox(s.bossBattle)
+                    s.bossBattle.started = True
+                    jogador.CheckHitbox(s.bossBattle,soundManager)
 
         if(not swapLeft and not swapRight and not swapDown and not swapUp and podeMover and pause ==0):
             jogador.move_x(velocity_x*janela.delta_time())
@@ -421,6 +438,7 @@ def Jogar():
                 botmenu.set_position(janela.width/2 - botmenu.width/2, janela.height/2 - botmenu.height/2)
             botmenu.draw()
             if cursor.is_over_area((botmenu.x , botmenu.y),(botmenu.x + botmenu.width , botmenu.y + botmenu.height)) and cursor.is_button_pressed(1): 
+                soundManager.som11()
                 menu.MenuPrincipal()
 
         # TELA DE PAUSE::
@@ -449,8 +467,10 @@ def Jogar():
                 menupause.set_position(janela.width/2 - menupause.width/2, janela.height/2 + menupause.height)
             menupause.draw()
             if cursor.is_over_area((continua.x , continua.y),(continua.x + continua.width , continua.y + continua.height)) and cursor.is_button_pressed(1): 
+                soundManager.som11()
                 pause = 0
             if cursor.is_over_area((menupause.x , menupause.y),(menupause.x + menupause.width , menupause.y + menupause.height)) and cursor.is_button_pressed(1): 
+                soundManager.som11()
                 menu.MenuPrincipal()
             
         # CROSSHAIR

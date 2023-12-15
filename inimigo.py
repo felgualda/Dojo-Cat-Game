@@ -61,6 +61,7 @@ class Inimigo:
 
         self.distanciaMira = 1000
         self.mirando = False
+        self.atacou = False
         self.atirou = False
         self.facing = 'right'
 
@@ -146,13 +147,14 @@ class Inimigo:
 
         return norma
         
-    def Attack(self,target):
+    def Attack(self,target,soundmanager):
         norma = math.sqrt(((target.x +target.width/2) - self.centro_x)**2 + ((target.y +target.height/2) - self.centro_y)**2)
         vet_x = ((target.x +target.width/2)- self.centro_x)/norma
         vet_y = ((target.y+target.height/2)- self.centro_y)/norma
 
         if(self.var==1):
             if(self.image.get_curr_frame()==25 or self.image.get_curr_frame()==35):
+                self.atacou = False
                 self.state=0
 
             if(self.velx > 0):
@@ -168,15 +170,20 @@ class Inimigo:
             
             if(self.image.get_curr_frame()==31 or self.image.get_curr_frame()==21):
                 #Frame de ataque
+                if(not self.atacou):
+                    soundmanager.som7()
+                self.atacou = True
+                    
                 if(self.hitbox.collided(target.colisao)):
                     if(target.tag=='player' and self.podeAtacar):
-                        target.LevarDano()
+                        target.LevarDano(soundmanager)
                         self.podeAtacar = False
                         self.attackCooldownTimer = 0
                         
         if(self.var==2):
             if(target.x < self.x and not self.mirando):
                 self.mirando = True
+                soundmanager.som9()
                 self.dirJogador = [vet_x,vet_y]
                 if self.image.get_curr_frame() < 34 or self.image.get_curr_frame() > 52:
                     self.image.set_sequence(34,52,True)
@@ -185,6 +192,7 @@ class Inimigo:
 
             if(target.x >= self.x and not self.mirando):
                 self.mirando = True
+                soundmanager.som9()
                 self.dirJogador = [vet_x,vet_y]
                 if self.image.get_curr_frame() < 15 or self.image.get_curr_frame() > 33:
                     self.image.set_sequence(15,33,True)
@@ -209,7 +217,7 @@ class Inimigo:
                 self.state=0
 
 
-    def Update(self,jogador,janela,colisoes,colportas):
+    def Update(self,jogador,janela,colisoes,colportas,soundmanager):
         if(self.vivo):
             if(jogador.x > self.x and self.mirando == False):
                 self.facing = 'right'
@@ -267,10 +275,10 @@ class Inimigo:
                 self.Stalk(jogador,janela,colisoes,colportas)
 
             if(self.state==1 and self.var==1):
-               self.Attack(jogador)
+               self.Attack(jogador,soundmanager)
 
             if(self.state==1 and self.var==2):
-                self.Attack(jogador)
+                self.Attack(jogador,soundmanager)
 
             if(self.state==0 and self.var==2):
                 x = self.Stalk(jogador,janela,colisoes,colportas)

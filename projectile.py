@@ -25,13 +25,13 @@ class Projectile():
     def Draw(self):
         self.image.draw()
 
-    def Hit(self, jogador):
-        jogador.LevarDano()
+    def Hit(self, jogador,soundmanager):
+        jogador.LevarDano(soundmanager)
         self.existe = False
 
-    def Update(self, janela, jogador):
+    def Update(self, janela, jogador,soundmanager):
         if(jogador.collided(self.image)):
-            self.Hit(jogador)
+            self.Hit(jogador,soundmanager)
 
         if(self.existe):
             self.move_x(self.speed * janela.delta_time() * self.vector[0])
