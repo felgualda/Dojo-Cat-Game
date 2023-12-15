@@ -83,7 +83,34 @@ def SetSalas(a):
           for j in range(len(a)):
                 if a[i][j] == 1:
                     variation = random.randint(2,21)
-                    todasSalas.append(Sala((j-spawn[1],i-spawn[0]),variation))
+                    x = Sala((j-spawn[1],i-spawn[0]),variation)
+                    #[(i-1, j), (i, j-1), (i, j+1), (i+1, j)]:
+                    if(i-1 < 0 or i-1 >= len(a) or j < 0 or j >= len(a)):
+                        pass
+                    else:
+                        if(a[i-1][j]==3):
+                            x.chefao='top'
+                    if(i+1 < 0 or i+1 >= len(a) or j < 0 or j >= len(a)):
+                        pass
+                    else:
+                        if(a[i+1][j]==3):
+                            x.chefao='bottom'
+
+                    if(i < 0 or i >= len(a) or j-1 < 0 or j-1 >= len(a)):
+                        pass
+                    else:
+                        if(a[i][j-1]==3):
+                            x.chefao='left'
+
+                    if(i < 0 or i >= len(a) or j+1 < 0 or j+1 >= len(a)):
+                        pass
+                    else:
+                        if(a[i][j+1]==3):
+                            x.chefao='right'
+
+                    todasSalas.append(x)
+                        
+
                 if a[i][j] == 3:
                     todasSalas.append(Sala((j-spawn[1],i-spawn[0]),30))
     

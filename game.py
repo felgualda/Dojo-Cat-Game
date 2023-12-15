@@ -26,7 +26,9 @@ def Reset():
     global timerStartGame
     global swapDown,swapLeft,swapRight,swapUp
     global timer
+    global venceu
 
+    venceu = False
     timerStartGame = 0
     swapDown = swapLeft = swapRight = swapUp = False
     timer = 0
@@ -118,12 +120,14 @@ def Jogar():
 
     global timersoma
     global timerStartGame
+    global venceu
 
     Reset()
 
     cursor.hide()
     janela.set_title('Dojo Cat - Build Incompleta')
     pause = 0
+    tocou = 0
 
     while True:
         jogador_centro_x = jogador.x + jogador.width / 2
@@ -407,6 +411,9 @@ def Jogar():
                 for i in range(len(s.spikes)):
                     jogador.CheckHitbox(s.spikes[i],soundManager)
                 if(s.var==30):
+                    venceu = s.bossBattle.venceu
+                    for i in range(len(s.bossBattle.ratinhos)):
+                        jogador.CheckHitbox(s.bossBattle.ratinhos[i],soundManager)
                     s.bossBattle.started = True
                     jogador.CheckHitbox(s.bossBattle,soundManager)
 
@@ -422,9 +429,13 @@ def Jogar():
 
         jogador.vida.drawCoracoes()
         drawBarra()
+
         # TELA DE MORTE:
 
         if jogador.vida.vida_atual <= 0:
+            if tocou == 0:
+                    soundManager.som13()
+                    tocou = 1
             pause = 1
             fundoEscuro.draw()
             janela.draw_text('VOCÊ MORREU',200,100,150,(255,0,0),'chapaza')
@@ -437,15 +448,37 @@ def Jogar():
                 botmenu = GameImage('assets/botaomenu.png')
                 botmenu.set_position(janela.width/2 - botmenu.width/2, janela.height/2 - botmenu.height/2)
             botmenu.draw()
-            if cursor.is_over_area((botmenu.x , botmenu.y),(botmenu.x + botmenu.width , botmenu.y + botmenu.height)) and cursor.is_button_pressed(1): 
+            if cursor.is_over_area((botmenu.x , botmenu.y),(botmenu.x + botmenu.width , botmenu.y + botmenu.height)) and cursor.is_button_pressed(1):
+                soundManager.som11() 
+                menu.MenuPrincipal()
+        # TELA DE WIN:
+        if venceu:
+            if tocou == 0:
+                soundManager.som12()
+                tocou = 1
+            pause = 1
+            fundoEscuro.draw()
+            janela.draw_text('VOCÊ VENCEU',200,100,150,(0,255,0),'chapaza')
+            botmenu2 = GameImage('assets/botaomenu5.png')
+            botmenu2.set_position(janela.width/2 - botmenu2.width/2, janela.height/2 - botmenu2.height/2)
+
+            if cursor.is_over_area((botmenu2.x , botmenu2.y),(botmenu2.x + botmenu2.width , botmenu2.y + botmenu2.height)):
+                botmenu2 = GameImage('assets/botaomenu6.png')
+                botmenu2.set_position(janela.width/2 - botmenu2.width/2, janela.height/2 - botmenu2.height/2)
+            else:
+                botmenu2 = GameImage('assets/botaomenu5.png')
+                botmenu2.set_position(janela.width/2 - botmenu2.width/2, janela.height/2 - botmenu2.height/2)
+            botmenu2.draw()
+            if cursor.is_over_area((botmenu2.x , botmenu2.y),(botmenu2.x + botmenu2.width , botmenu2.y + botmenu2.height)) and cursor.is_button_pressed(1):
                 soundManager.som11()
                 menu.MenuPrincipal()
+            botmenu2.draw()
 
         # TELA DE PAUSE::
 
         if(key_input.key_pressed("esc")):
             pause = 1
-        if pause == 1 and jogador.vida.vida_atual > 0:
+        if pause == 1 and jogador.vida.vida_atual > 0 and not venceu:
             fundoEscuro.draw()
             janela.draw_text('JOGO PAUSADO',200,100,150,(255,255,255),'chapaza')
             continua = GameImage('assets/botaocontinua.png')

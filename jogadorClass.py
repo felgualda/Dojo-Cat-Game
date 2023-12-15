@@ -67,6 +67,10 @@ class Jogador:
             if(self.hitbox_pe.collided(other.image)):
                 if(self.vida.vida_atual < self.vida.vida_max):
                     other.Coletar(soundmanager,self.vida)
+        if(other.tag=='ratinho'):
+            if(self.hitbox_pe.collided(other.image)):
+                self.LevarDano(soundmanager)
+                self.vida.invencivel = True
 
     def attack(self,soundmanager):
         if len(self.enemiesInRange) != 0:

@@ -78,4 +78,6 @@ pos_barrainvestida = (w-300,h-50)
 # SOM
 timersoma = 0
 
+venceu = False
+
 v_str = ''

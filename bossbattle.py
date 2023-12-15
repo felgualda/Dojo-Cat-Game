@@ -1,6 +1,7 @@
 from PPlay.sprite import *
 from globalVar import *
 import math
+from ratinho import *
 
 class BossBattle():
     def __init__(self,x,y) -> None:
@@ -11,34 +12,44 @@ class BossBattle():
 
         self.bossImage = Sprite('assets/inimigos/boss_sheet.png',24)
         self.bossDmgImage = Sprite('assets/inimigos/boss_sheet_dmg.png',24)
+        self.mortoSprite = Sprite('assets/rato-morto.png')
 
         self.bossbar = Sprite('assets/bossbar.png',22)
         self.bossbar.set_position(294,29)
 
         self.quadro = 0
 
+        self.tempoSpawnRatinhos = 7
+        self.timerSpawnRatinhos = 6
+        self.ratinhos = []
+
         self.bossImage.set_position(x+600-self.bossImage.width/2,y+337.5-self.bossImage.height/2)
         self.bossDmgImage.set_position(x+600-self.bossImage.width/2,y+337.5-self.bossImage.height/2)
+        self.mortoSprite.set_position(496,334)
 
         self.bossImage.set_sequence_time(0,23,120,True)
         self.bossDmgImage.set_sequence_time(0,23,120,True)
 
-        self.bossAttackRange = 200
+        self.bossAttackRange = 230
         self.bossState = 0
 
         self.socando = False
         self.podeAtacar = False
 
-        self.bossSocoCooldown = 2
+        self.bossSocoCooldown = 3.5
         self.bossSocoCooldownTimer = 0
 
         self.vivo = True
-        self.vidaMax = 1100
+        self.vidaMax = 770
         self.vida = self.vidaMax
         self.levouDano = False
 
         self.tempoSpriteDano = 0.25
         self.tempoSpriteTimer = 0
+
+        self.esperaFim = 5
+        self.esperaFimTimer = 0
+        self.venceu = False
 
     def move_x(self,speed):
         self.bossImage.x += speed
@@ -49,11 +60,17 @@ class BossBattle():
         self.bossDmgImage.y += speed
 
     def Draw(self):
-        if(self.levouDano):
-            self.bossDmgImage.draw()
+        for r in self.ratinhos:
+            r.Draw()
+
+        if(self.vivo):
+            if(self.levouDano):
+                self.bossDmgImage.draw()
+            else:
+                self.bossImage.draw()
         else:
-            self.bossImage.draw()
-    
+            self.mortoSprite.draw()
+        
     def DrawBossBar(self):
         if(self.started):
             self.bossbar.draw()
@@ -91,7 +108,7 @@ class BossBattle():
         if(self.vivo):
             self.vida -= dano
             self.levouDano = True
-            self.quadro = ((self.vidaMax-self.vida)//50)
+            self.quadro = ((self.vidaMax-self.vida)//35)
 
     def Update(self,jogador,janela,soundmanager):
         
@@ -99,6 +116,8 @@ class BossBattle():
             self.bossbar.set_curr_frame(self.quadro)
 
         if(self.vivo):
+            if(self.vida <= 0):
+                self.vivo = False
 
             if(self.levouDano):
                 self.tempoSpriteTimer += janela.delta_time()
@@ -131,9 +150,22 @@ class BossBattle():
 
             if(self.bossState==1):
                 self.Attack(jogador,soundmanager)
+
+            self.timerSpawnRatinhos += janela.delta_time()
+            if(self.timerSpawnRatinhos >= self.tempoSpawnRatinhos and len(self.ratinhos) <= 10):
+                self.ratinhos.append(Ratinho(315,129))
+                self.ratinhos.append(Ratinho(834,129))
+                self.timerSpawnRatinhos = 0
+
+            for r in self.ratinhos:
+                r.Update(janela)
             
             self.bossDmgImage.update()
             self.bossImage.update()
             self.bossbar.update
-            
+        else:
+            self.ratinhos = []
+            self.esperaFimTimer += janela.delta_time()
+            if(self.esperaFimTimer >= self.esperaFim):
+                self.venceu = True
 

@@ -27,6 +27,8 @@ class Sala:
         self.passagem = [Sprite('assets/sala/passages/TOP_PASSAGE.png'),Sprite('assets/sala/passages/BOTTOM_PASSAGE.png'),Sprite('assets/sala/passages/RIGHT_PASSAGE.png'),Sprite('assets/sala/passages/LEFT_PASSAGE.png')]
         self.portas = [Sprite('assets/portas/porta-cima_sheet.png',22),Sprite('assets/portas/porta-baixo_Sheet.png',22),Sprite('assets/portas/porta-direita_sheet.png',22),Sprite('assets/portas/porta-esquerda_sheet.png',22)]
 
+        self.tapete = Sprite('assets/tapete.png',2)
+
         # PORTAS
         self.portasAbertas = True
         self.abrindoPortas = False
@@ -73,6 +75,7 @@ class Sala:
         # MISC
         self.interactables = []
         self.spikes = []
+        self.chefao = ''
 
         # VARIAÇÃO DE SALA
         if(self.var == 1):
@@ -234,14 +237,28 @@ class Sala:
             c.set_position(0+self.x,279+self.y)
             self.col.append(c)
 
+        if(self.chefao=='top'):
+            self.tapete.set_curr_frame(1)
+            self.tapete.set_position(self.x+552,self.y+165)
+        if(self.chefao=='bottom'):
+            self.tapete.set_curr_frame(1)
+            self.tapete.set_position(self.x+552,self.y+506)
+        if(self.chefao=='left'):
+            self.tapete.set_position(self.x+159,self.y+335)
+        if(self.chefao=='right'):
+            self.tapete.set_position(self.x+984,self.y+335)
+
+
+        self.tapete.update()
+
     def AbrirPortas(self,soundmanager):
         if(not self.abrindoPortas):
             soundmanager.som4()
         self.abrindoPortas = True
-        for p in self.portas:
-            if p.get_curr_frame() <= 0 or p.get_curr_frame() >= 10:
-                p.set_sequence(0,10,True)
-            if(p.get_curr_frame()==9):
+        for i in range(len(self.portas)):
+            if self.portas[i].get_curr_frame() <= 0 or self.portas[i].get_curr_frame() >= 10:
+                self.portas[i].set_sequence(0,10,True)
+            if(self.portas[i].get_curr_frame()==9):
                 self.portasAbertas=True
                 self.abrindoPortas=False
 
@@ -266,6 +283,8 @@ class Sala:
             i.x += speed
         for i in self.portas:
             i.x += speed
+
+        self.tapete.move_x(speed)
 
         for i in self.inimigos:
             i.move_x(speed)
@@ -292,6 +311,8 @@ class Sala:
         for i in self.portas:
             i.y += speed
 
+        self.tapete.move_y(speed)
+
         for i in self.inimigos:
             i.move_y(speed)
 
@@ -307,7 +328,6 @@ class Sala:
         self.sprite.set_position(self.x, self.y)
 
     def UpdateEntities(self,jogador,janela,soundmanager):
-
         if(self.var==30):
             self.bossBattle.Update(jogador,janela,soundmanager)
 
@@ -346,7 +366,7 @@ class Sala:
         if(not self.cleared and self.portasAbertas):
             self.FecharPortas(soundmanager)
         
-        if(self.cleared and not self.portasAbertas):
+        if(self.cleared and not self.portasAbertas and not self.var==30):
             self.AbrirPortas(soundmanager)
 
         if(not self.abrindoPortas and self.portasAbertas):
@@ -395,6 +415,9 @@ class Sala:
         if self.portaEsquerda:
             self.passagem[3].draw()
             self.portas[3].draw()
+
+        if(self.chefao!=''):
+            self.tapete.draw()
         
         for b in self.interactables:
             if(b.tag=='coracao'):

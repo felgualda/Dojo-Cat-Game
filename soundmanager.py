@@ -56,6 +56,16 @@ class AudioManager():
         somclique.set_volume(0.1)
         somclique.play()
 
+    def som12(self):
+        somwin = mixer.Sound('audio/vitoria.mp3')
+        somwin.set_volume(0.3)
+        somwin.play()
+
+    def som13(self):
+        somlose = mixer.Sound('audio/derrota.mp3')
+        somlose.set_volume(0.3)
+        somlose.play()
+
 
     
 
